@@ -1,0 +1,11 @@
+Take a look at these issues on GitHub., 
+there is a discussion about gps, which does not work properly if there is no clear view to the sky (satellite)
+
+
+https://stackoverflow.com/a/77103201/18451446
+
+https://github.com/Baseflow/flutter-geolocator/issues/1312
+
+https://github.com/Baseflow/flutter-geolocator/issues/1312#issuecomment-1697401259
+
+https://github.com/Baseflow/flutter-geolocator/issues/1312#issuecomment-1706290915
