@@ -3,6 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gps_tracker/location_tracker/data/location_tracker_repository.dart';
 import 'package:gps_tracker/location_tracker/helpers/location_tracker_helper.dart';
+import 'package:gps_tracker/location_tracker/models/location_tracker_data_model.dart';
+import 'package:gps_tracker/location_tracker/models/location_tracker_state_model.dart';
+import 'package:gps_tracker/location_tracker/models/shift_model.dart';
 import 'package:location/location.dart';
 
 part 'location_tracker_event.dart';
@@ -196,7 +199,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
       );
     }
 
-    LocationTrackerDataModel locationTrackerDataModel = LocationTrackerDataModel(
+    final LocationTrackerDataModel locationTrackerDataModel = LocationTrackerDataModel(
       parsedDateTime: positionDateTime,
       locationData: getHighAccuracyLocation,
       distance: positionDistance,
@@ -225,7 +228,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
   }
 
   Future<void> _sendLocalLocations(ShiftModel? currentShift) async {
-    final unsentLocations = await DbHelper.localSavedLocations();
+    final unsentLocations = <LocationTrackerDataModel>[];
 
     if (unsentLocations.isNotEmpty && currentShift != null) {
       await _iLocationTrackerRepository.sendListOfLocations(
