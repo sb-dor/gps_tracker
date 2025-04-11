@@ -1,11 +1,10 @@
 import 'dart:math';
-
-import 'package:app_settings/app_settings.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart' as permissions;
+import 'dart:developer' as dev;
 
 class LocationTrackerHelper {
   LocationTrackerHelper(this._location, this._deviceInfoPlugin);
@@ -13,10 +12,16 @@ class LocationTrackerHelper {
   final Location _location;
   final DeviceInfoPlugin _deviceInfoPlugin;
 
-  double calculateDistance(lat1, lon1, lat2, lon2, {bool inMeters = true}) {
-    var p = 0.017453292519943295;
-    var c = cos;
-    var a =
+  double calculateDistance(
+    double lat1,
+    double lon1,
+    double lat2,
+    double lon2, {
+    bool inMeters = true,
+  }) {
+    final p = 0.017453292519943295;
+    final c = cos;
+    final a =
         0.5 - c((lat2 - lat1) * p) / 2 + c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
     if (inMeters) {
       return 12742 * 1000 * asin(sqrt(a)); // 12742 km is Earth's diameter -> * 1000 = meters
@@ -59,11 +64,11 @@ class LocationTrackerHelper {
     required LocationData freshPosition,
     required LocationData lastLocation,
   }) {
-    double distance = calculateDistance(
-      freshPosition.latitude,
-      freshPosition.longitude,
-      lastLocation.latitude,
-      lastLocation.longitude,
+    final double distance = calculateDistance(
+      freshPosition.latitude!,
+      freshPosition.longitude!,
+      lastLocation.latitude!,
+      lastLocation.longitude!,
     );
 
     final DateTime currentTime = parsedDateTimeFromSinceEpoch(freshPosition.time!.toInt());
@@ -72,10 +77,10 @@ class LocationTrackerHelper {
     // Unfortunately, the geoLocator package doesn’t tell you whether the timestamp came from the
     // GPS signal or the device clock — it just gives you the best available timestamp.
     // but it's giving normal
-    double timeDiff = currentTime.difference(lastTime).inSeconds.toDouble();
+    final double timeDiff = currentTime.difference(lastTime).inSeconds.toDouble();
 
-    double speed = (timeDiff > 0) ? (distance / timeDiff) : 0;
-    print(
+    final double speed = (timeDiff > 0) ? (distance / timeDiff) : 0;
+    dev.log(
       "current_datetime parsed: $currentTime\n"
       "last_datetime parsed: $lastTime\n"
       "diff: $timeDiff\n"
@@ -146,10 +151,10 @@ class LocationTrackerHelper {
     // iOS location permission (just to be safe)
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       final locationStatus = await permissions.Permission.locationAlways.status;
-      print("locationStatus of ios: $locationStatus");
+      dev.log("locationStatus of ios: $locationStatus");
       if (!locationStatus.isGranted) {
         final result = await permissions.Permission.locationAlways.request();
-        print("result of ios: $result");
+        dev.log("result of ios: $result");
         if (!result.isGranted) {
           await permissions.openAppSettings();
           return false;

@@ -5,4 +5,5 @@ abstract class LocationTrackerMessageConstants {
   static const String result = "result";
   static const String resultFailed = "failed";
   static const String lastInactiveDateTime = "last_inactive_datetime";
+  static const String somethingWentWrong = "Что-то пошло не так";
 }

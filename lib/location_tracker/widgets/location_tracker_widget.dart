@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:my_store/features/location_tracker/bloc/location_tracker_bloc.dart';
-import 'package:my_store/features/location_tracker/widgets/location_tracker_test_widget.dart';
-import 'package:my_store/utils/colors.dart';
+import 'package:gps_tracker/location_tracker/bloc/location_tracker_bloc.dart';
+import 'package:gps_tracker/location_tracker/widgets/location_tracker_test_widget.dart';
 import 'controllers/location_tracker_widget_controller.dart';
-import 'location_tracker_actual_widget.dart';
 
 class LocationTrackerInhWidget extends InheritedWidget {
   const LocationTrackerInhWidget({
@@ -60,15 +57,13 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
 
   void startTracking({bool checkIsStarting = true}) {
     if (locationTrackerWidgetController.isStarting && checkIsStarting) {
-      EasyLoading.showInfo("Пожалуйста подождите");
+      _showMessage("Пожалуйста подождите");
       return;
     }
     locationTrackerWidgetController.changeIsStarting(true);
     locationTrackerBloc.add(
       LocationTrackerEvent.start(
-        onMessage: (String message) {
-          EasyLoading.showInfo(message);
-        },
+        onMessage: _showMessage,
         onStart: () {
           locationTrackerWidgetController.changeIsTracking(true);
         },
@@ -77,6 +72,12 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
         },
       ),
     );
+  }
+
+
+  void _showMessage(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -137,7 +138,7 @@ class _LocationTrackerWidgetDelegateState extends State<LocationTrackerWidgetDel
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: mainAppColor,
+        backgroundColor: Colors.deepPurpleAccent,
         elevation: 0.0,
         title: const Text("Location Tracker"),
         actions: [
@@ -164,7 +165,7 @@ class _LocationTrackerWidgetDelegateState extends State<LocationTrackerWidgetDel
           ),
         ],
       ),
-      body: const CustomScrollView(slivers: [LocationTrackerActualWidget()]),
+      body: const CustomScrollView(slivers: [LocationTrackerTestWidget()]),
     );
   }
 }

@@ -1,4 +1,4 @@
-import 'package:my_store/features/location_tracker/models/shift_detail_model.dart';
+import 'package:gps_tracker/location_tracker/models/shift_detail_model.dart';
 
 class ShiftModel {
   ShiftModel({
@@ -37,7 +37,7 @@ class ShiftModel {
     List<ShiftDetailModel> shiftDetails = [];
 
     if (json.containsKey('shift_details')) {
-      List<dynamic> dShiftDetails = json['shift_details'];
+      final List<dynamic> dShiftDetails = json['shift_details'];
       shiftDetails = dShiftDetails.map((element) => ShiftDetailModel.fromJson(element)).toList();
     }
 

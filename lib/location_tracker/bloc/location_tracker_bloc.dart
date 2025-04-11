@@ -1,15 +1,9 @@
 import 'dart:async';
-import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gps_tracker/location_tracker/data/location_tracker_repository.dart';
+import 'package:gps_tracker/location_tracker/helpers/location_tracker_helper.dart';
 import 'package:location/location.dart';
-import 'package:meta/meta.dart';
-import 'package:my_store/database/db/dbHelper.dart';
-import 'package:my_store/features/location_tracker/data/location_tracker_repository.dart';
-import 'package:my_store/features/location_tracker/helpers/location_tracker_helper.dart';
-import 'package:my_store/features/location_tracker/models/location_tracker_data_model.dart';
-import 'package:my_store/features/location_tracker/models/location_tracker_state_model.dart';
-import 'package:my_store/features/location_tracker/models/shift_model.dart';
-import 'package:my_store/features/location_tracker/widgets/controllers/location_tracker_widget_controller.dart';
 
 part 'location_tracker_event.dart';
 

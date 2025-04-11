@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:gps_tracker/location_tracker/bloc/location_tracker_bloc.dart';
+import 'package:gps_tracker/location_tracker/constants/location_tracker_message_constants.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:my_store/features/location_tracker/bloc/location_tracker_bloc.dart';
-import 'package:my_store/features/location_tracker/widgets/controllers/location_tracker_widget_controller.dart';
-import 'package:my_store/features/location_tracker/widgets/location_tracker_widget.dart';
-import 'package:my_store/utils/constants.dart';
+import 'controllers/location_tracker_widget_controller.dart';
+import 'location_tracker_widget.dart';
 
 class LocationTrackerTestWidget extends StatefulWidget {
   const LocationTrackerTestWidget({super.key});
@@ -36,6 +35,11 @@ class _LocationTrackerTestWidgetState extends State<LocationTrackerTestWidget> {
     super.dispose();
   }
 
+  void _showMessage(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LocationTrackerBloc, LocationTrackerState>(
@@ -47,7 +51,9 @@ class _LocationTrackerTestWidgetState extends State<LocationTrackerTestWidget> {
           case LocationTracker$InProgressState():
             return const SliverFillRemaining(child: Center(child: CircularProgressIndicator()));
           case LocationTracker$ErrorState():
-            return const SliverFillRemaining(child: Center(child: Text(somethingWentWrong)));
+            return const SliverFillRemaining(
+              child: Center(child: Text(LocationTrackerMessageConstants.somethingWentWrong)),
+            );
           case LocationTracker$CompletedState():
             final currentStateModel = state.locationTrackerStateModel;
             return SliverFillRemaining(
@@ -73,9 +79,7 @@ class _LocationTrackerTestWidgetState extends State<LocationTrackerTestWidget> {
                               onPressed: () {
                                 _locationTrackerBloc.add(
                                   LocationTrackerEvent.pause(
-                                    onMessage: (String message) {
-                                      EasyLoading.showInfo(message);
-                                    },
+                                    onMessage: _showMessage,
                                     onPause: () {
                                       _locationTrackerWidgetController.changeIsTracking(false);
                                     },
@@ -89,9 +93,7 @@ class _LocationTrackerTestWidgetState extends State<LocationTrackerTestWidget> {
                               if (_locationTrackerWidgetController.isTracking) {
                                 _locationTrackerBloc.add(
                                   LocationTrackerEvent.finish(
-                                    onMessage: (String message) {
-                                      EasyLoading.showInfo(message);
-                                    },
+                                    onMessage: _showMessage,
                                     onFinish: () {
                                       _locationTrackerWidgetController.changeIsTracking(false);
                                     },
