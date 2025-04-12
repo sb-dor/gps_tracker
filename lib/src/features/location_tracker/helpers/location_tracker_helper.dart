@@ -124,44 +124,6 @@ class LocationTrackerHelper {
       permission = await _location.requestPermission();
     }
 
-    // // Background location
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      final bgStatus = await permissions.Permission.locationAlways.status;
-      if (!bgStatus.isGranted) {
-        final result = await permissions.Permission.locationAlways.request();
-        if (!result.isGranted) {
-          // FROM DOCS: The Android 11 option to always allow is not presented on the location
-          // permission dialog prompt. The user has to enable it manually from the app settings.
-          if (androidSdk == 30) await permissions.openAppSettings();
-          return false;
-        }
-      }
-    }
-
-    // Bluetooth ON check
-    // For better location accuracy
-    if (defaultTargetPlatform == TargetPlatform.android && androidSdk >= 23) {
-      final bluetoothState = await FlutterBluePlus.isOn;
-      if (!bluetoothState) {
-        // await AppSettings.openAppSettings(type: AppSettingsType.bluetooth);
-        // return false;
-      }
-    }
-
-    // iOS location permission (just to be safe)
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      final locationStatus = await permissions.Permission.locationAlways.status;
-      dev.log("locationStatus of ios: $locationStatus");
-      if (!locationStatus.isGranted) {
-        final result = await permissions.Permission.locationAlways.request();
-        dev.log("result of ios: $result");
-        if (!result.isGranted) {
-          await permissions.openAppSettings();
-          return false;
-        }
-      }
-    }
-
     return true;
   }
 }

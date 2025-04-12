@@ -93,7 +93,7 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
       appBar: AppBar(
         backgroundColor: Colors.deepPurpleAccent,
         elevation: 0.0,
-        title: const Text("Location Tracker"),
+        title: const Text("Location Tracker", style: TextStyle(color: Colors.white)),
         actions: [
           ListenableBuilder(
             listenable: _locationTrackerWidgetController,
