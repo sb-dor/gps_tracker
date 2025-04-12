@@ -6,9 +6,6 @@
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>This app needs access to your location while you're using it to provide location-based features.</string>
 
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>This app needs access to your location even when the app is in the background.</string>
-
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>This app uses your location in the background to provide continuous tracking and location-based features, even when the app is not actively in use.</string>
 

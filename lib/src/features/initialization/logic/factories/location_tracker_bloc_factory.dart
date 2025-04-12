@@ -31,7 +31,7 @@ class LocationTrackerBlocFactory {
       iLocationTrackerSendLocationLocalDatasource: locationSendLocal,
     );
 
-    final locationTrackerHelper = LocationTrackerHelper(_location, _deviceInfoPlugin);
+    final locationTrackerHelper = LocationTrackerHelper(_location);
 
     return LocationTrackerBloc(
       repository: repository,

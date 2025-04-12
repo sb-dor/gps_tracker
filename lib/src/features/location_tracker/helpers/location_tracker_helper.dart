@@ -1,16 +1,11 @@
 import 'dart:math';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:location/location.dart';
-import 'package:permission_handler/permission_handler.dart' as permissions;
 import 'dart:developer' as dev;
 
 class LocationTrackerHelper {
-  LocationTrackerHelper(this._location, this._deviceInfoPlugin);
+  LocationTrackerHelper(this._location);
 
   final Location _location;
-  final DeviceInfoPlugin _deviceInfoPlugin;
 
   double calculateDistance(
     double lat1,
@@ -106,13 +101,6 @@ class LocationTrackerHelper {
   }
 
   Future<bool> _requestPermission() async {
-    int androidSdk = 0;
-
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      final androidInfo = await _deviceInfoPlugin.androidInfo;
-      androidSdk = androidInfo.version.sdkInt;
-    }
-
     bool serviceEnabled = await _location.serviceEnabled();
     while (!serviceEnabled) {
       serviceEnabled = await _location.requestService();

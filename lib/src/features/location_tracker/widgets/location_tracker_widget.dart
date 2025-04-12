@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -18,6 +20,7 @@ class LocationTrackerWidget extends StatefulWidget {
 class LocationTrackerWidgetState extends State<LocationTrackerWidget> with WidgetsBindingObserver {
   late final LocationTrackerWidgetController _locationTrackerWidgetController;
   late final LocationTrackerBloc _locationTrackerBloc;
+  late final StreamSubscription<LocationTrackerState> _locationTrackerStateSubs;
   final _mapController = MapController();
 
   @override
@@ -32,6 +35,18 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
         startTracking: startTracking,
       ),
     );
+    _locationTrackerStateSubs = _locationTrackerBloc.stream.listen((state) {
+      if (state is LocationTracker$CompletedState &&
+          state.locationTrackerStateModel.lastValidPosition != null) {
+        _mapController.move(
+          LatLng(
+            state.locationTrackerStateModel.lastValidPosition!.latitude!,
+            state.locationTrackerStateModel.lastValidPosition!.longitude!,
+          ),
+          11,
+        );
+      }
+    });
   }
 
   void startTracking({bool checkIsStarting = true}) {

@@ -134,7 +134,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
 
     if (currentShift != null) {
       event.startTracking(checkIsStarting: false);
-    }else{
+    } else {
       event.locationWidgetController.changeIsStarting(false);
     }
 
