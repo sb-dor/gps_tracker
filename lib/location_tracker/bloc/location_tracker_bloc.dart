@@ -1,16 +1,72 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:gps_tracker/location_tracker/data/location_tracker_repository.dart';
 import 'package:gps_tracker/location_tracker/helpers/location_tracker_helper.dart';
 import 'package:gps_tracker/location_tracker/models/location_tracker_data_model.dart';
 import 'package:gps_tracker/location_tracker/models/location_tracker_state_model.dart';
 import 'package:gps_tracker/location_tracker/models/shift_model.dart';
+import 'package:gps_tracker/location_tracker/widgets/controllers/location_tracker_widget_controller.dart';
 import 'package:location/location.dart';
 
-part 'location_tracker_event.dart';
+part 'location_tracker_bloc.freezed.dart';
 
-part 'location_tracker_state.dart';
+@immutable
+@freezed
+sealed class LocationTrackerEvent with _$LocationTrackerEvent {
+  const LocationTrackerEvent._();
+
+  const factory LocationTrackerEvent.initial({
+    required final LocationTrackerWidgetController locationWidgetController,
+    required final Function({bool checkIsStarting}) startTracking,
+  }) = _LocationTracker$InitialEvent;
+
+  const factory LocationTrackerEvent.start({
+    required final void Function(String message) onMessage,
+    required final void Function() onStart,
+    required final void Function() onFinish,
+  }) = _LocationTracker$StartEvent;
+
+  const factory LocationTrackerEvent.pause({
+    required final void Function(String message) onMessage,
+    required final void Function() onPause,
+  }) = _LocationTracker$PauseEvent;
+
+  const factory LocationTrackerEvent.currentLocation({
+    required final void Function(String message) onMessage,
+  }) = _LocationTracker$CurrentLocationEvent;
+
+  const factory LocationTrackerEvent.finish({
+    required final void Function(String message) onMessage,
+    required final void Function() onFinish,
+  }) = _LocationTracker$FinishEvent;
+}
+
+@immutable
+@freezed
+sealed class LocationTrackerState with _$LocationTrackerState {
+  const LocationTrackerState._();
+
+  const factory LocationTrackerState.initial(
+    final LocationTrackerStateModel locationTrackerStateModel,
+  ) = LocationTracker$InitialState;
+
+  const factory LocationTrackerState.inProgress(
+    final LocationTrackerStateModel locationTrackerStateModel,
+  ) = LocationTracker$InProgressState;
+
+  const factory LocationTrackerState.error(
+    final LocationTrackerStateModel locationTrackerStateModel,
+  ) = LocationTracker$ErrorState;
+
+  const factory LocationTrackerState.completed(
+    final LocationTrackerStateModel locationTrackerStateModel,
+  ) = LocationTracker$CompletedState;
+
+  static LocationTrackerState get initialState =>
+      const LocationTrackerState.initial(LocationTrackerStateModel());
+}
 
 class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerState> {
   LocationTrackerBloc({
