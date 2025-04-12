@@ -1,4 +1,5 @@
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:gps_tracker/src/features/initialization/logic/factories/factory.dart';
 import 'package:gps_tracker/src/features/location_tracker/bloc/location_tracker_bloc.dart';
 import 'package:gps_tracker/src/features/location_tracker/data/location_tracker_datasource.dart';
 import 'package:gps_tracker/src/features/location_tracker/data/location_tracker_repository.dart';
@@ -6,16 +7,14 @@ import 'package:gps_tracker/src/features/location_tracker/data/location_tracker_
 import 'package:gps_tracker/src/features/location_tracker/helpers/location_tracker_helper.dart';
 import 'package:location/location.dart';
 
-class LocationTrackerBlocFactory {
+final class LocationTrackerBlocFactory extends Factory<LocationTrackerBloc> {
   LocationTrackerBlocFactory({
     required final Location location,
-    required final DeviceInfoPlugin deviceInfoPlugin,
-  }) : _location = location,
-       _deviceInfoPlugin = deviceInfoPlugin;
+  }) : _location = location;
 
   final Location _location;
-  final DeviceInfoPlugin _deviceInfoPlugin;
 
+  @override
   LocationTrackerBloc create() {
     // ---------- Fake implementations
     final ILocationTrackerDatasource datasource = LocationTrackerDatasourceFakeImpl();
