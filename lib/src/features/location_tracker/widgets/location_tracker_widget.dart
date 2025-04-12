@@ -43,7 +43,7 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
             state.locationTrackerStateModel.lastValidPosition!.latitude!,
             state.locationTrackerStateModel.lastValidPosition!.longitude!,
           ),
-          11,
+          _mapController.camera.zoom,
         );
       }
     });
