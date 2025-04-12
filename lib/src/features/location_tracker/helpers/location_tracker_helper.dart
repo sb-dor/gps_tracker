@@ -45,6 +45,11 @@ class LocationTrackerHelper {
         return (isValid: false, positionDateTime: null, distance: null);
       }
 
+      // 80 km/h
+      if (currentAndVerifiedPositionsData.speed > 22.22) {
+        return (isValid: false, positionDateTime: null, distance: null);
+      }
+
       return (
         isValid: true,
         positionDateTime: currentAndVerifiedPositionsData.positionDatetime,

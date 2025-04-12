@@ -9,6 +9,7 @@ import 'package:gps_tracker/src/features/location_tracker/models/location_tracke
 import 'package:gps_tracker/src/features/location_tracker/models/shift_model.dart';
 import 'package:gps_tracker/src/features/location_tracker/widgets/controllers/location_tracker_widget_controller.dart';
 import 'package:location/location.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'location_tracker_bloc.freezed.dart';
 
@@ -35,6 +36,7 @@ sealed class LocationTrackerEvent with _$LocationTrackerEvent {
 
   const factory LocationTrackerEvent.currentLocation({
     required final void Function(String message) onMessage,
+    required final List<LocationData> locations,
   }) = _LocationTracker$CurrentLocationEvent;
 
   const factory LocationTrackerEvent.finish({
@@ -90,6 +92,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
         final _LocationTracker$CurrentLocationEvent event => _getCurrentBestLocation(
           emit,
           event.onMessage,
+          event.locations,
         ),
         final _LocationTracker$FinishEvent event => _locationTracker$StopEvent(event, emit),
       },
@@ -100,7 +103,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
   final LocationTrackerHelper _locationTrackerHelper;
   final Location _location;
   final Duration _timerDuration;
-  Timer? _timerForGettingCurrentPosition;
+  StreamSubscription<List<LocationData>>? _onLocationChanged;
 
   void _locationTracker$InitialEvent(
     _LocationTracker$InitialEvent event,
@@ -154,7 +157,9 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
 
     _prepareData(emit, isTracking: true);
 
-    await _getCurrentBestLocation(emit, event.onMessage, checkValidPosition: false);
+    final location = await _location.getLocation();
+
+    await _getCurrentBestLocation(emit, event.onMessage, [location], checkValidPosition: false);
 
     event.onStart();
 
@@ -175,8 +180,8 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
 
     event.onFinish();
 
-    _timerForGettingCurrentPosition = Timer.periodic((_timerDuration), (_) async {
-      add(LocationTrackerEvent.currentLocation(onMessage: event.onMessage));
+    _onLocationChanged = _location.onLocationChanged.bufferTime(_timerDuration).listen((data) {
+      add(LocationTrackerEvent.currentLocation(onMessage: event.onMessage, locations: data));
     });
   }
 
@@ -190,8 +195,8 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
 
     event.onPause();
 
-    _timerForGettingCurrentPosition?.cancel();
-    _timerForGettingCurrentPosition = null;
+    _onLocationChanged?.cancel();
+    _onLocationChanged = null;
     _emitter(emit);
   }
 
@@ -213,8 +218,8 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
       setLastValidPositionOnNull: true,
       setShiftOnNull: true,
     );
-    _timerForGettingCurrentPosition?.cancel();
-    _timerForGettingCurrentPosition = null;
+    _onLocationChanged?.cancel();
+    _onLocationChanged = null;
     _emitter(emit, stateModel: currentStateModel);
   }
 
@@ -226,64 +231,65 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
       setLastValidPositionOnNull: true,
       setLocationTrackerDataModelOnNull: true,
     );
-    _timerForGettingCurrentPosition?.cancel();
-    _timerForGettingCurrentPosition = null;
+    _onLocationChanged?.cancel();
+    _onLocationChanged = null;
     _emitter(emit, stateModel: currentStateModel);
   }
 
   Future<void> _getCurrentBestLocation(
     Emitter<LocationTrackerState> emit,
-    void Function(String message) onMessage, {
+    void Function(String message) onMessage,
+    List<LocationData> locations, {
     bool checkValidPosition = true,
   }) async {
-    final getHighAccuracyLocation = await _location.getLocation();
+    for (final location in locations.reversed) {
+      DateTime? positionDateTime;
+      double? positionDistance;
 
-    debugPrint("is giving data: $getHighAccuracyLocation");
+      if (checkValidPosition) {
+        final isValidPosition = _locationTrackerHelper.isValidPosition(
+          location,
+          state.locationTrackerStateModel.lastValidPosition,
+        );
 
-    DateTime? positionDateTime;
-    double? positionDistance;
+        if (!isValidPosition.isValid) continue;
 
-    if (checkValidPosition) {
-      final isValidPosition = _locationTrackerHelper.isValidPosition(
-        getHighAccuracyLocation,
-        state.locationTrackerStateModel.lastValidPosition,
+        positionDateTime = isValidPosition.positionDateTime;
+        positionDistance = isValidPosition.distance;
+      } else {
+        positionDateTime = _locationTrackerHelper.parsedDateTimeFromSinceEpoch(
+          (location.time ?? 0.0).toInt(),
+        );
+      }
+
+      final LocationTrackerDataModel locationTrackerDataModel = LocationTrackerDataModel(
+        parsedDateTime: positionDateTime,
+        locationData: location,
+        distance: positionDistance,
       );
 
-      if (!isValidPosition.isValid) return;
+      final validatedPositions = List.of(state.locationTrackerStateModel.validatedPositions);
 
-      positionDateTime = isValidPosition.positionDateTime;
-      positionDistance = isValidPosition.distance;
-    } else {
-      positionDateTime = _locationTrackerHelper.parsedDateTimeFromSinceEpoch(
-        (getHighAccuracyLocation.time ?? 0.0).toInt(),
-      );
-    }
+      validatedPositions.add(location);
 
-    final LocationTrackerDataModel locationTrackerDataModel = LocationTrackerDataModel(
-      parsedDateTime: positionDateTime,
-      locationData: getHighAccuracyLocation,
-      distance: positionDistance,
-    );
-
-    final validatedPositions = List.of(state.locationTrackerStateModel.validatedPositions);
-
-    validatedPositions.add(getHighAccuracyLocation);
-
-    final currentStateModel = state.locationTrackerStateModel.copyWith(
-      lastValidPosition: getHighAccuracyLocation,
-      validatedPositions: validatedPositions,
-      locationTrackerDataModel: locationTrackerDataModel,
-      setLocationTrackerDataModelOnNull: true,
-    );
-
-    // print("validated positions length is: ${validatedPositions.length}");
-    _emitter(emit, stateModel: currentStateModel);
-
-    if (checkValidPosition) {
-      await _iLocationTrackerRepository.sendLocation(
+      final currentStateModel = state.locationTrackerStateModel.copyWith(
+        lastValidPosition: location,
+        validatedPositions: validatedPositions,
         locationTrackerDataModel: locationTrackerDataModel,
-        onMessage: onMessage,
+        setLocationTrackerDataModelOnNull: true,
       );
+
+      // print("validated positions length is: ${validatedPositions.length}");
+      _emitter(emit, stateModel: currentStateModel);
+
+      if (checkValidPosition) {
+        await _iLocationTrackerRepository.sendLocation(
+          locationTrackerDataModel: locationTrackerDataModel,
+          onMessage: onMessage,
+        );
+      }
+
+      break;
     }
   }
 
@@ -317,8 +323,8 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
 
   @override
   Future<void> close() {
-    _timerForGettingCurrentPosition?.cancel();
-    _timerForGettingCurrentPosition = null;
+    _onLocationChanged?.cancel();
+    _onLocationChanged = null;
     return super.close();
   }
 }

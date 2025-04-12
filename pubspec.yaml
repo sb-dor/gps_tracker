@@ -47,6 +47,7 @@ dependencies:
   window_manager: ^0.4.3
   logger: ^2.5.0
   bloc_concurrency: ^0.3.0
+  rxdart: ^0.28.0
 
 dev_dependencies:
   flutter_test:
