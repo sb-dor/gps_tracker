@@ -1,4 +1,4 @@
-import 'package:gps_tracker/location_tracker/models/shift_detail_model.dart';
+import 'package:gps_tracker/src/features/location_tracker/models/shift_detail_model.dart';
 
 class ShiftModel {
   ShiftModel({

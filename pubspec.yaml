@@ -44,6 +44,9 @@ dependencies:
   flutter_blue_plus: ^1.35.3
   freezed_annotation: ^3.0.0
   json_annotation: ^4.9.0
+  window_manager: ^0.4.3
+  logger: ^2.5.0
+  bloc_concurrency: ^0.3.0
 
 dev_dependencies:
   flutter_test:

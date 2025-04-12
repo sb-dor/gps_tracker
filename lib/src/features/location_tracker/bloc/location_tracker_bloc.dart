@@ -2,12 +2,12 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:gps_tracker/location_tracker/data/location_tracker_repository.dart';
-import 'package:gps_tracker/location_tracker/helpers/location_tracker_helper.dart';
-import 'package:gps_tracker/location_tracker/models/location_tracker_data_model.dart';
-import 'package:gps_tracker/location_tracker/models/location_tracker_state_model.dart';
-import 'package:gps_tracker/location_tracker/models/shift_model.dart';
-import 'package:gps_tracker/location_tracker/widgets/controllers/location_tracker_widget_controller.dart';
+import 'package:gps_tracker/src/features/location_tracker/data/location_tracker_repository.dart';
+import 'package:gps_tracker/src/features/location_tracker/helpers/location_tracker_helper.dart';
+import 'package:gps_tracker/src/features/location_tracker/models/location_tracker_data_model.dart';
+import 'package:gps_tracker/src/features/location_tracker/models/location_tracker_state_model.dart';
+import 'package:gps_tracker/src/features/location_tracker/models/shift_model.dart';
+import 'package:gps_tracker/src/features/location_tracker/widgets/controllers/location_tracker_widget_controller.dart';
 import 'package:location/location.dart';
 
 part 'location_tracker_bloc.freezed.dart';

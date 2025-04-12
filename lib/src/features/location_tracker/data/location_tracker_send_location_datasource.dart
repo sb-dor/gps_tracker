@@ -1,5 +1,5 @@
-import 'package:gps_tracker/location_tracker/models/location_tracker_data_model.dart';
-import 'package:gps_tracker/location_tracker/models/shift_model.dart';
+import 'package:gps_tracker/src/features/location_tracker/models/location_tracker_data_model.dart';
+import 'package:gps_tracker/src/features/location_tracker/models/shift_model.dart';
 
 abstract interface class ILocationTrackerSendLocationDatasource {
   Future<bool> sendLocation({

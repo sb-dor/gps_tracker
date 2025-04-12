@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:gps_tracker/location_tracker/models/shift_model.dart';
+import 'package:gps_tracker/src/features/location_tracker/models/shift_model.dart';
 import 'package:location/location.dart';
 
 import 'location_tracker_data_model.dart';

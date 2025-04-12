@@ -1,7 +1,6 @@
-import 'package:gps_tracker/location_tracker/models/location_tracker_data_model.dart';
-import 'package:gps_tracker/location_tracker/models/shift_model.dart';
+import 'package:gps_tracker/src/features/location_tracker/models/location_tracker_data_model.dart';
+import 'package:gps_tracker/src/features/location_tracker/models/shift_model.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-
 import 'location_tracker_datasource.dart';
 import 'location_tracker_send_location_datasource.dart';
 
