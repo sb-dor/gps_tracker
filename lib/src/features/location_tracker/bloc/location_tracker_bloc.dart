@@ -289,6 +289,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
         );
       }
 
+      // at least one coordinate should be good
       break;
     }
   }

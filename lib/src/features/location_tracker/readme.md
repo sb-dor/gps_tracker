@@ -14,4 +14,5 @@ https://github.com/Baseflow/flutter-geolocator/issues/1312#issuecomment-17062909
 for ios problems:
 
 https://stackoverflow.com/questions/67870103/cant-retrieve-location-in-flutter-by-geolocator
+
 https://stackoverflow.com/questions/62749900/flutter-location-packages-does-not-return-current-location-on-ios
