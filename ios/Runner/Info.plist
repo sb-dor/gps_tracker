@@ -3,17 +3,13 @@
 <plist version="1.0">
 <dict>
 
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>This app needs access to your location while you're using it to provide location-based features.</string>
-
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>This app uses your location in the background to provide continuous tracking and location-based features, even when the app is not actively in use.</string>
-
     <key>UIBackgroundModes</key>
     <array>
         <string>location</string>
     </array>
 
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app needs access to your location while you're using it to provide location-based features.</string>
 
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>

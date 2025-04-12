@@ -238,6 +238,8 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
   }) async {
     final getHighAccuracyLocation = await _location.getLocation();
 
+    debugPrint("is giving data: $getHighAccuracyLocation");
+
     DateTime? positionDateTime;
     double? positionDistance;
 
