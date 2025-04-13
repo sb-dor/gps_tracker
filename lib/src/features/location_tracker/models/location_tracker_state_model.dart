@@ -60,6 +60,7 @@ class LocationTrackerStateModel {
     bool setLastValidPositionOnNull = false,
     bool setLocationTrackerDataModelOnNull = false,
     bool setShiftOnNull = false,
+    bool setSpeedOnNull = false,
   }) {
     return LocationTrackerStateModel(
       shift: setShiftOnNull ? shift : shift ?? this.shift,
@@ -72,7 +73,7 @@ class LocationTrackerStateModel {
               ? locationTrackerDataModel
               : locationTrackerDataModel ?? this.locationTrackerDataModel,
       validatedPositions: validatedPositions ?? this.validatedPositions,
-      speed: speed ?? this.speed,
+      speed: setSpeedOnNull ? speed : speed ?? this.speed,
     );
   }
 }

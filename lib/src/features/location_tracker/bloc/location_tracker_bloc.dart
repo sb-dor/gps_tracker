@@ -215,8 +215,10 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
     final currentStateModel = state.locationTrackerStateModel.copyWith(
       lastValidPosition: null,
       shift: null,
+      speed: null,
       setLastValidPositionOnNull: true,
       setShiftOnNull: true,
+      setSpeedOnNull: true,
     );
     _onLocationChanged?.cancel();
     _onLocationChanged = null;
