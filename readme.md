@@ -61,7 +61,7 @@ A cross-platform GPS tracking application built with Flutter. It allows users to
 |----------|--------------|
 | ✅ Android | Implemented |
 | ✅ iOS     | Implemented |
-| ✅ macOS   | Not yet      |
+| ✅ macOS   | Implemented      |
 | ⬜ Web     | Not yet      |
 
 ## 🗺️ Map Integration
@@ -77,6 +77,7 @@ Location tracking continues to work even when the app is in the background (Andr
 ### *Made with Flutter 💙*
 
 <p align="left">
+  <img src="https://raw.githubusercontent.com/sb-dor/gps_tracker/refs/heads/main/assets/readme_pics/macos.png" width="330" />
   <img src="https://raw.githubusercontent.com/sb-dor/gps_tracker/refs/heads/main/assets/readme_pics/ios_simulator_pic.png" width="150" />
   <img src="https://raw.githubusercontent.com/sb-dor/gps_tracker/refs/heads/main/assets/readme_pics/android_simulator.png" width="150" />
 </p>
