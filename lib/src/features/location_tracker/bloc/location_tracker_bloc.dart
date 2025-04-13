@@ -21,6 +21,7 @@ sealed class LocationTrackerEvent with _$LocationTrackerEvent {
   const factory LocationTrackerEvent.initial({
     required final LocationTrackerWidgetController locationWidgetController,
     required final Function({bool checkIsStarting}) startTracking,
+    final Function(String message)? onMessage,
   }) = _LocationTracker$InitialEvent;
 
   const factory LocationTrackerEvent.start({
@@ -113,7 +114,9 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
 
     emit(LocationTrackerState.inProgress(state.locationTrackerStateModel));
 
-    final checkPermission = await _locationTrackerHelper.checkPermission();
+    final checkPermission = await _locationTrackerHelper.checkPermission(
+      onErrorMessage: event.onMessage,
+    );
 
     if (!checkPermission) {
       emit(LocationTrackerState.completed(state.locationTrackerStateModel));
@@ -148,7 +151,9 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
     _LocationTracker$StartEvent event,
     Emitter<LocationTrackerState> emit,
   ) async {
-    final checkPermission = await _locationTrackerHelper.checkPermission();
+    final checkPermission = await _locationTrackerHelper.checkPermission(
+      onErrorMessage: event.onMessage,
+    );
 
     if (!checkPermission) {
       event.onFinish();

@@ -23,6 +23,13 @@ problem but with difference package:
 https://github.com/Baseflow/flutter-geolocator/issues/1369
 
 
+problems with android 11 and higher
+
+https://developer.android.com/develop/sensors-and-location/location/permissions/background
+
+https://developer.android.com/develop/sensors-and-location/location/permissions/background#background-dialog-target-sdk-version
+
+
 
 -------------------------------------
 # 🛰️ GPS Tracking App

@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:gps_tracker/src/common/constants/location_tracker_message_constants.dart';
 import 'package:location/location.dart';
 import 'dart:developer' as dev;
 import 'package:permission_handler/permission_handler.dart' as permissions;
@@ -98,16 +100,25 @@ class LocationTrackerHelper {
 
   DateTime parsedDateTimeFromSinceEpoch(int time) => DateTime.fromMillisecondsSinceEpoch(time);
 
-  Future<bool> checkPermission() async {
-    final permissionResult = await _requestPermission();
+  Future<bool> checkPermission({void Function(String message)? onErrorMessage}) async {
+    try {
+      final permissionResult = await _requestPermission();
 
-    if (!permissionResult) return false;
+      if (!permissionResult) return false;
 
-    if (!(await _location.isBackgroundModeEnabled())) {
-      await _location.enableBackgroundMode();
+      if (!(await _location.isBackgroundModeEnabled())) {
+        await _location.enableBackgroundMode();
+      }
+
+      return true;
+    } on PlatformException {
+      if (onErrorMessage != null) {
+        onErrorMessage(LocationTrackerMessageConstants.platformExceptionError);
+      }
+      rethrow;
+    } catch (error, stackTrace) {
+      Error.throwWithStackTrace(error, stackTrace);
     }
-
-    return true;
   }
 
   Future<bool> _requestPermission() async {

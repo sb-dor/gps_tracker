@@ -33,6 +33,7 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
       LocationTrackerEvent.initial(
         locationWidgetController: _locationTrackerWidgetController,
         startTracking: startTracking,
+        onMessage: _showMessage
       ),
     );
     _locationTrackerStateSubs = _locationTrackerBloc.stream.listen((state) {
