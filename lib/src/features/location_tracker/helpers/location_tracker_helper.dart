@@ -51,8 +51,13 @@ class LocationTrackerHelper {
         return (isValid: false, positionDateTime: null, distance: null, speed: null);
       }
 
-      // 100 km/h
-      if (currentAndVerifiedPositionsData.speed > 27.78) {
+      // // 100 km/h
+      // if (currentAndVerifiedPositionsData.speed > 27.78) {
+      //   return (isValid: false, positionDateTime: null, distance: null, speed: null);
+      // }
+
+      // If the vehicle drives more than 1 km in 15 seconds, return false.
+      if (currentAndVerifiedPositionsData.distance > 1000) {
         return (isValid: false, positionDateTime: null, distance: null, speed: null);
       }
 

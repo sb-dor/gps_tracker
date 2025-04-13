@@ -39,7 +39,7 @@ final class LocationTrackerBlocFactory extends Factory<LocationTrackerBloc> {
       repository: repository,
       locationTrackerHelper: locationTrackerHelper,
       location: _location,
-      timerDuration: const Duration(seconds: 15),
+      timerDuration: const Duration(seconds: 10),
     );
   }
 }
