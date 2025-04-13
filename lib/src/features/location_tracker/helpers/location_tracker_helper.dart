@@ -1,11 +1,15 @@
 import 'dart:math';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:location/location.dart';
 import 'dart:developer' as dev;
+import 'package:permission_handler/permission_handler.dart' as permissions;
 
 class LocationTrackerHelper {
-  LocationTrackerHelper(this._location);
+  LocationTrackerHelper(this._location, this._deviceInfoPlugin);
 
   final Location _location;
+  final DeviceInfoPlugin _deviceInfoPlugin;
 
   double calculateDistance(
     double lat1,
@@ -116,6 +120,17 @@ class LocationTrackerHelper {
 
     while (permission != PermissionStatus.granted) {
       permission = await _location.requestPermission();
+    }
+
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      final AndroidDeviceInfo androidInfo = await _deviceInfoPlugin.androidInfo;
+      if (androidInfo.version.sdkInt >= 30) {
+        final locationAlways = await permissions.Permission.locationAlways.isGranted;
+        if (!locationAlways) {
+          await permissions.openAppSettings();
+          return false;
+        }
+      }
     }
 
     return true;

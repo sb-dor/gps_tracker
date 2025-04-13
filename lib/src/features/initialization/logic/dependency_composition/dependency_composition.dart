@@ -20,6 +20,7 @@ final class DependencyComposition extends Factory<DependencyContainer> {
       locationTrackerBloc:
           LocationTrackerBlocFactory(
             location: location,
+            deviceInfoPlugin: deviceInfoPlugin,
           ).create(),
       deviceInfoPlugin: deviceInfoPlugin,
       logger: _logger,

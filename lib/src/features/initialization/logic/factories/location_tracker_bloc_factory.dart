@@ -10,9 +10,12 @@ import 'package:location/location.dart';
 final class LocationTrackerBlocFactory extends Factory<LocationTrackerBloc> {
   LocationTrackerBlocFactory({
     required final Location location,
-  }) : _location = location;
+    required final DeviceInfoPlugin deviceInfoPlugin,
+  }) : _location = location,
+       _deviceInfoPlugin = deviceInfoPlugin;
 
   final Location _location;
+  final DeviceInfoPlugin _deviceInfoPlugin;
 
   @override
   LocationTrackerBloc create() {
@@ -30,7 +33,7 @@ final class LocationTrackerBlocFactory extends Factory<LocationTrackerBloc> {
       iLocationTrackerSendLocationLocalDatasource: locationSendLocal,
     );
 
-    final locationTrackerHelper = LocationTrackerHelper(_location);
+    final locationTrackerHelper = LocationTrackerHelper(_location, _deviceInfoPlugin);
 
     return LocationTrackerBloc(
       repository: repository,
