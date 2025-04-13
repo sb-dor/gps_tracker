@@ -33,7 +33,7 @@ A cross-platform GPS tracking application built with Flutter. It allows users to
 
 - Real-time GPS tracking
 - Background tracking support
-- Integrated map view using `flutter_map`
+- Integrated map view using [`flutter_map`](https://pub.dev/packages/flutter_map)
 - Cross-platform support
 - Built with the [`location`](https://pub.dev/packages/location) package
 - Solved false "jump" location issue by filtering inaccurate or unrealistic coordinates
@@ -57,4 +57,4 @@ Location tracking continues to work even when the app is in the background (Andr
 
 ---
 
-*Made with Flutter 💙*
+### *Made with Flutter 💙*
