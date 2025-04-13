@@ -2,6 +2,16 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+
+    <key>com.apple.security.network.client</key>
+    <true/>
+
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app needs access to your location while it is in use.</string>
+
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This app needs access to your location at all times.</string>
+
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>

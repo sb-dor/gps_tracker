@@ -34,6 +34,13 @@ about -> SERVICE_STATUS_ERROR in android
 
 https://github.com/Lyokone/flutterlocation/issues/568
 
+
+for macos problems take a look here:
+
+https://github.com/flutter/flutter/issues/47606
+
+https://pub.dev/packages/location#macos
+
 -------------------------------------
 # 🛰️ GPS Tracking App
 

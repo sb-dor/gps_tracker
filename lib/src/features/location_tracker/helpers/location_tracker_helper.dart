@@ -111,7 +111,11 @@ class LocationTrackerHelper {
 
       if (!permissionResult) return false;
 
-      if (!(await _location.isBackgroundModeEnabled())) {
+      final isMobilePlatform =
+          defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS;
+
+      if (isMobilePlatform && !(await _location.isBackgroundModeEnabled())) {
         await _location.enableBackgroundMode();
       }
 
