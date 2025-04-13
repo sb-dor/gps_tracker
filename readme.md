@@ -57,12 +57,12 @@ A cross-platform GPS tracking application built with Flutter. It allows users to
 
 ## 📱 Platform Support
 
-| Platform | Status       |
-|----------|--------------|
+| Platform | Status      |
+|----------|-------------|
 | ✅ Android | Implemented |
 | ✅ iOS     | Implemented |
-| ✅ macOS   | Implemented      |
-| ⬜ Web     | Not yet      |
+| ✅ macOS   | Implemented |
+| ✅ Web     | Implemented |
 
 ## 🗺️ Map Integration
 
