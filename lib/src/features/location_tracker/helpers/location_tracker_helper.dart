@@ -56,7 +56,7 @@ class LocationTrackerHelper {
       //   return (isValid: false, positionDateTime: null, distance: null, speed: null);
       // }
 
-      // If the vehicle drives more than 1 km in 15 seconds, return false.
+      // If the vehicle drives more than 1 km in 10 seconds, return false.
       if (currentAndVerifiedPositionsData.distance > 1000) {
         return (isValid: false, positionDateTime: null, distance: null, speed: null);
       }
