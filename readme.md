@@ -1,3 +1,6 @@
+## All problems were solved!
+
+
 Take a look at these issues on GitHub., 
 there is a discussion about gps, which does not work properly if there is no clear view to the sky (satellite)
 
