@@ -30,6 +30,9 @@ https://developer.android.com/develop/sensors-and-location/location/permissions/
 https://developer.android.com/develop/sensors-and-location/location/permissions/background#background-dialog-target-sdk-version
 
 
+about -> SERVICE_STATUS_ERROR in android
+
+https://github.com/Lyokone/flutterlocation/issues/568
 
 -------------------------------------
 # 🛰️ GPS Tracking App
