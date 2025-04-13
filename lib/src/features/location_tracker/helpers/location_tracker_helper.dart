@@ -132,11 +132,14 @@ class LocationTrackerHelper {
   }
 
   Future<bool> _requestPermission() async {
-    await _checkServiceEnables();
+    final service = await _checkServiceEnables();
+
+    if (!service) return false;
     // Foreground location permission
     var permission = await _location.hasPermission();
 
-    while (permission != PermissionStatus.granted) {
+    if (permission != PermissionStatus.granted) {
+      debugPrint("is hasPermission: $permission");
       permission = await _location.requestPermission();
     }
 
@@ -157,17 +160,22 @@ class LocationTrackerHelper {
   // PlatformException(SERVICE_STATUS_ERROR, Location service status couldn't be determined, null, null)
   // for solution you can check the url that I put in readme.md file
   // in main app folder
-  Future<void> _checkServiceEnables({int limit = 10}) async {
+  Future<bool> _checkServiceEnables({int limit = 10}) async {
     try {
       bool serviceEnabled = await _location.serviceEnabled();
-      while (!serviceEnabled) {
+      if (!serviceEnabled) {
+        debugPrint("is service enables: $serviceEnabled");
         serviceEnabled = await _location.requestService();
+        return false;
       }
+
+      return true;
     } on PlatformException {
       await Future.delayed(Duration(milliseconds: 100));
       if (limit > 0) {
-        await _checkServiceEnables(limit: --limit);
+        return await _checkServiceEnables(limit: --limit);
       }
     }
+    return false;
   }
 }

@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:gps_tracker/src/common/constants/location_tracker_message_constants.dart';
 import 'package:gps_tracker/src/features/location_tracker/data/location_tracker_repository.dart';
 import 'package:gps_tracker/src/features/location_tracker/helpers/location_tracker_helper.dart';
 import 'package:gps_tracker/src/features/location_tracker/models/location_tracker_data_model.dart';
@@ -151,43 +153,53 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
     _LocationTracker$StartEvent event,
     Emitter<LocationTrackerState> emit,
   ) async {
-    final checkPermission = await _locationTrackerHelper.checkPermission(
-      onErrorMessage: event.onMessage,
-    );
-
-    if (!checkPermission) {
-      event.onFinish();
-      return;
-    }
-
-    _prepareData(emit, isTracking: true);
-
-    final location = await _location.getLocation();
-
-    await _getCurrentBestLocation(emit, event.onMessage, [location], checkValidPosition: false);
-
-    event.onStart();
-
-    // start or even continue shift, because if suddenly user's phone dies
-    // make request just once again and
-    final shift = await _iLocationTrackerRepository.startShift(
-      onMessage: event.onMessage,
-      locationTrackerDataModel: state.locationTrackerStateModel.locationTrackerDataModel,
-    );
-
-    if (shift != null) {
-      final currentStateModel = state.locationTrackerStateModel.copyWith(
-        shift: shift,
-        setShiftOnNull: true,
+    try {
+      final checkPermission = await _locationTrackerHelper.checkPermission(
+        onErrorMessage: event.onMessage,
       );
-      _emitter(emit, stateModel: currentStateModel);
+
+      if (!checkPermission) {
+        event.onFinish();
+        return;
+      }
+
+      _prepareData(emit, isTracking: true);
+
+      final location = await _location.getLocation();
+
+      await _getCurrentBestLocation(emit, event.onMessage, [location], checkValidPosition: false);
+
+      event.onStart();
+
+      // start or even continue shift, because if suddenly user's phone dies
+      // make request just once again and
+      final shift = await _iLocationTrackerRepository.startShift(
+        onMessage: event.onMessage,
+        locationTrackerDataModel: state.locationTrackerStateModel.locationTrackerDataModel,
+      );
+
+      if (shift != null) {
+        final currentStateModel = state.locationTrackerStateModel.copyWith(
+          shift: shift,
+          setShiftOnNull: true,
+        );
+        _emitter(emit, stateModel: currentStateModel);
+      }
+
+      event.onFinish();
+
+      _onLocationChanged = _location.onLocationChanged.bufferTime(_timerDuration).listen((data) {
+        add(LocationTrackerEvent.currentLocation(onMessage: event.onMessage, locations: data));
+      });
+    } on PlatformException catch (error, stackTrace) {
+      if ((error.code.contains(LocationTrackerMessageConstants.permissionDenied) ?? false)) {
+        event.onMessage(LocationTrackerMessageConstants.permissionDenied);
+      } else {
+        event.onMessage(LocationTrackerMessageConstants.platformExceptionError);
+      }
+      event.onFinish();
+      Error.throwWithStackTrace(error, stackTrace);
     }
-
-    event.onFinish();
-
-    _onLocationChanged = _location.onLocationChanged.bufferTime(_timerDuration).listen((data) {
-      add(LocationTrackerEvent.currentLocation(onMessage: event.onMessage, locations: data));
-    });
   }
 
   void _locationTracker$PauseEvent(
