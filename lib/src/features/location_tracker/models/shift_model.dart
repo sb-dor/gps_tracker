@@ -38,7 +38,10 @@ class ShiftModel {
 
     if (json.containsKey('shift_details')) {
       final List<dynamic> dShiftDetails = json['shift_details'];
-      shiftDetails = dShiftDetails.map((element) => ShiftDetailModel.fromJson(element)).toList();
+      shiftDetails =
+          dShiftDetails
+              .map((element) => ShiftDetailModel.fromJson(element))
+              .toList();
     }
 
     return ShiftModel(

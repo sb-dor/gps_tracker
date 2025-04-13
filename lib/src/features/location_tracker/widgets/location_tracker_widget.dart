@@ -17,7 +17,8 @@ class LocationTrackerWidget extends StatefulWidget {
   State<LocationTrackerWidget> createState() => LocationTrackerWidgetState();
 }
 
-class LocationTrackerWidgetState extends State<LocationTrackerWidget> with WidgetsBindingObserver {
+class LocationTrackerWidgetState extends State<LocationTrackerWidget>
+    with WidgetsBindingObserver {
   late final LocationTrackerWidgetController _locationTrackerWidgetController;
   late final LocationTrackerBloc _locationTrackerBloc;
   late final StreamSubscription<LocationTrackerState> _locationTrackerStateSubs;
@@ -28,12 +29,13 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _locationTrackerWidgetController = LocationTrackerWidgetController();
-    _locationTrackerBloc = DependenciesScope.of(context, listen: false).locationTrackerBloc;
+    _locationTrackerBloc =
+        DependenciesScope.of(context, listen: false).locationTrackerBloc;
     _locationTrackerBloc.add(
       LocationTrackerEvent.initial(
         locationWidgetController: _locationTrackerWidgetController,
         startTracking: startTracking,
-        onMessage: _showMessage
+        onMessage: _showMessage,
       ),
     );
     _locationTrackerStateSubs = _locationTrackerBloc.stream.listen((state) {
@@ -71,7 +73,9 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
 
   void _showMessage(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -109,7 +113,10 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
       appBar: AppBar(
         backgroundColor: Colors.deepPurpleAccent,
         elevation: 0.0,
-        title: const Text("Location Tracker", style: TextStyle(color: Colors.white)),
+        title: const Text(
+          "Location Tracker",
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           ListenableBuilder(
             listenable: _locationTrackerWidgetController,
@@ -123,7 +130,10 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
                     child: SizedBox(
                       width: 15,
                       height: 15,
-                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
                     ),
                   ),
                 );
@@ -148,7 +158,11 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
                   );
                 case LocationTracker$ErrorState():
                   return const SliverFillRemaining(
-                    child: Center(child: Text(LocationTrackerMessageConstants.somethingWentWrong)),
+                    child: Center(
+                      child: Text(
+                        LocationTrackerMessageConstants.somethingWentWrong,
+                      ),
+                    ),
                   );
                 case LocationTracker$CompletedState():
                   final currentStateModel = state.locationTrackerStateModel;
@@ -183,9 +197,8 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
                                         LocationTrackerEvent.pause(
                                           onMessage: _showMessage,
                                           onPause: () {
-                                            _locationTrackerWidgetController.changeIsTracking(
-                                              false,
-                                            );
+                                            _locationTrackerWidgetController
+                                                .changeIsTracking(false);
                                           },
                                         ),
                                       );
@@ -194,14 +207,14 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
                                   ),
                                 ElevatedButton(
                                   onPressed: () {
-                                    if (_locationTrackerWidgetController.isTracking) {
+                                    if (_locationTrackerWidgetController
+                                        .isTracking) {
                                       _locationTrackerBloc.add(
                                         LocationTrackerEvent.finish(
                                           onMessage: _showMessage,
                                           onFinish: () {
-                                            _locationTrackerWidgetController.changeIsTracking(
-                                              false,
-                                            );
+                                            _locationTrackerWidgetController
+                                                .changeIsTracking(false);
                                           },
                                         ),
                                       );
@@ -231,10 +244,13 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
                             ),
                             children: [
                               TileLayer(
-                                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                urlTemplate:
+                                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                                 userAgentPackageName: 'com.example.app',
                               ),
-                              if (currentStateModel.validatedPositions.isNotEmpty)
+                              if (currentStateModel
+                                  .validatedPositions
+                                  .isNotEmpty)
                                 PolylineLayer(
                                   polylines: [
                                     Polyline(
@@ -242,22 +258,33 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
                                       points:
                                           currentStateModel.validatedPositions
                                               .map(
-                                                (point) =>
-                                                    LatLng(point.latitude!, point.longitude!),
+                                                (point) => LatLng(
+                                                  point.latitude!,
+                                                  point.longitude!,
+                                                ),
                                               )
                                               .toList(),
                                       color: Colors.blue,
                                     ),
                                   ],
                                 ),
-                              if (currentStateModel.validatedPositions.isNotEmpty &&
-                                  currentStateModel.validatedPositions.length >= 2)
+                              if (currentStateModel
+                                      .validatedPositions
+                                      .isNotEmpty &&
+                                  currentStateModel.validatedPositions.length >=
+                                      2)
                                 MarkerLayer(
                                   markers: [
                                     Marker(
                                       point: LatLng(
-                                        currentStateModel.validatedPositions.first.latitude!,
-                                        currentStateModel.validatedPositions.first.longitude!,
+                                        currentStateModel
+                                            .validatedPositions
+                                            .first
+                                            .latitude!,
+                                        currentStateModel
+                                            .validatedPositions
+                                            .first
+                                            .longitude!,
                                       ),
                                       width: 80,
                                       height: 80,
@@ -272,8 +299,14 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
                                     ),
                                     Marker(
                                       point: LatLng(
-                                        currentStateModel.validatedPositions.last.latitude!,
-                                        currentStateModel.validatedPositions.last.longitude!,
+                                        currentStateModel
+                                            .validatedPositions
+                                            .last
+                                            .latitude!,
+                                        currentStateModel
+                                            .validatedPositions
+                                            .last
+                                            .longitude!,
                                       ),
                                       width: 80,
                                       height: 80,

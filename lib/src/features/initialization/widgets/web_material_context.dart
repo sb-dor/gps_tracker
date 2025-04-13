@@ -18,7 +18,10 @@ class _WebMaterialContextState extends State<WebMaterialContext> {
   Widget build(BuildContext context) {
     return DependenciesScope(
       dependencies: widget.dependencyContainer,
-      child: MaterialApp(debugShowCheckedModeBanner: !kReleaseMode, home: LocationTrackerWidget()),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: !kReleaseMode,
+        home: LocationTrackerWidget(),
+      ),
     );
   }
 }

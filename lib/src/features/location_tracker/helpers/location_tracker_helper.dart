@@ -23,22 +23,32 @@ class LocationTrackerHelper {
     final p = 0.017453292519943295;
     final c = cos;
     final a =
-        0.5 - c((lat2 - lat1) * p) / 2 + c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+        0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
     if (inMeters) {
-      return 12742 * 1000 * asin(sqrt(a)); // 12742 km is Earth's diameter -> * 1000 = meters
+      return 12742 *
+          1000 *
+          asin(sqrt(a)); // 12742 km is Earth's diameter -> * 1000 = meters
     } else {
       return 12742 * asin(sqrt(a)); // in km
     }
   }
 
-  ({bool isValid, DateTime? positionDateTime, double? distance, double? speed}) isValidPosition(
+  ({bool isValid, DateTime? positionDateTime, double? distance, double? speed})
+  isValidPosition(
     LocationData currentPosition,
     LocationData? lastValidPosition,
   ) {
     // rejecting positions with bad accuracy (over 20) meters). That’s good for consistency.
     // The accuracy is not available on all devices. In these cases the value is 0.0.
     if ((currentPosition.accuracy ?? 0.0) > 50) {
-      return (isValid: false, positionDateTime: null, distance: null, speed: null);
+      return (
+        isValid: false,
+        positionDateTime: null,
+        distance: null,
+        speed: null,
+      );
     }
 
     if (lastValidPosition != null) {
@@ -48,7 +58,12 @@ class LocationTrackerHelper {
       );
       // if user's previous location is around 10m do not get that location
       if (currentAndVerifiedPositionsData.distance < 10) {
-        return (isValid: false, positionDateTime: null, distance: null, speed: null);
+        return (
+          isValid: false,
+          positionDateTime: null,
+          distance: null,
+          speed: null,
+        );
       }
 
       // // 100 km/h
@@ -58,7 +73,12 @@ class LocationTrackerHelper {
 
       // If the vehicle drives more than 1 km in 10 seconds, return false.
       if (currentAndVerifiedPositionsData.distance > 1000) {
-        return (isValid: false, positionDateTime: null, distance: null, speed: null);
+        return (
+          isValid: false,
+          positionDateTime: null,
+          distance: null,
+          speed: null,
+        );
       }
 
       return (
@@ -72,7 +92,8 @@ class LocationTrackerHelper {
     return (isValid: true, positionDateTime: null, distance: null, speed: null);
   }
 
-  ({double speed, double distance, DateTime positionDatetime}) dataBetweenTwoPositions({
+  ({double speed, double distance, DateTime positionDatetime})
+  dataBetweenTwoPositions({
     required LocationData freshPosition,
     required LocationData lastLocation,
   }) {
@@ -83,13 +104,18 @@ class LocationTrackerHelper {
       lastLocation.longitude!,
     );
 
-    final DateTime currentTime = parsedDateTimeFromSinceEpoch(freshPosition.time!.toInt());
-    final DateTime lastTime = parsedDateTimeFromSinceEpoch(lastLocation.time!.toInt());
+    final DateTime currentTime = parsedDateTimeFromSinceEpoch(
+      freshPosition.time!.toInt(),
+    );
+    final DateTime lastTime = parsedDateTimeFromSinceEpoch(
+      lastLocation.time!.toInt(),
+    );
 
     // Unfortunately, the geoLocator package doesn’t tell you whether the timestamp came from the
     // GPS signal or the device clock — it just gives you the best available timestamp.
     // but it's giving normal
-    final double timeDiff = currentTime.difference(lastTime).inSeconds.toDouble();
+    final double timeDiff =
+        currentTime.difference(lastTime).inSeconds.toDouble();
 
     final double speed = (timeDiff > 0) ? (distance / timeDiff) : 0;
     dev.log(
@@ -103,10 +129,14 @@ class LocationTrackerHelper {
     return (speed: speed, distance: distance, positionDatetime: currentTime);
   }
 
-  DateTime parsedDateTimeFromSinceEpoch(int time) => DateTime.fromMillisecondsSinceEpoch(time);
+  DateTime parsedDateTimeFromSinceEpoch(int time) =>
+      DateTime.fromMillisecondsSinceEpoch(time);
 
-  Future<bool> checkPermission({void Function(String message)? onErrorMessage}) async {
+  Future<bool> checkPermission({
+    void Function(String message)? onErrorMessage,
+  }) async {
     try {
+      // Nothing to do with web, the plugin works directly out of box.
       if (kIsWeb || kIsWasm) return true;
 
       final permissionResult = await _requestPermission();
@@ -126,7 +156,6 @@ class LocationTrackerHelper {
       if (onErrorMessage != null) {
         onErrorMessage(LocationTrackerMessageConstants.platformExceptionError);
       }
-      debugPrint("error is $error | stacktrace: $stackTrace");
       rethrow;
     } catch (error, stackTrace) {
       Error.throwWithStackTrace(error, stackTrace);
@@ -141,14 +170,14 @@ class LocationTrackerHelper {
     var permission = await _location.hasPermission();
 
     if (permission != PermissionStatus.granted) {
-      debugPrint("is hasPermission: $permission");
       permission = await _location.requestPermission();
     }
 
     if (defaultTargetPlatform == TargetPlatform.android) {
       final AndroidDeviceInfo androidInfo = await _deviceInfoPlugin.androidInfo;
       if (androidInfo.version.sdkInt >= 30) {
-        final locationAlways = await permissions.Permission.locationAlways.isGranted;
+        final locationAlways =
+            await permissions.Permission.locationAlways.isGranted;
         if (!locationAlways) {
           await permissions.openAppSettings();
           return false;
@@ -166,7 +195,6 @@ class LocationTrackerHelper {
     try {
       bool serviceEnabled = await _location.serviceEnabled();
       if (!serviceEnabled) {
-        debugPrint("is service enables: $serviceEnabled");
         serviceEnabled = await _location.requestService();
         return false;
       }

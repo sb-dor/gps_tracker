@@ -16,8 +16,10 @@ class LocationTrackerStateModel {
 
   final ShiftModel? shift;
   final LocationData? lastValidPosition;
-  final LocationTrackerDataModel? locationTrackerDataModel; // for sending to the server
-  final List<LocationData> validatedPositions; // just for test, will be removed in the future
+  final LocationTrackerDataModel?
+  locationTrackerDataModel; // for sending to the server
+  final List<LocationData>
+  validatedPositions; // just for test, will be removed in the future
   final double? speed; // just for test, will be removed in the future
 
   @override

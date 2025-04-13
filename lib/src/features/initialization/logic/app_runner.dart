@@ -16,7 +16,9 @@ class AppRunner {
   //
   Future<void> initialize() async {
     final logger =
-        AppLoggerFactory(logFilter: kReleaseMode ? NoOpLogFilter() : DevelopmentFilter()).create();
+        AppLoggerFactory(
+          logFilter: kReleaseMode ? NoOpLogFilter() : DevelopmentFilter(),
+        ).create();
     //
     await runZonedGuarded(
       () async {
@@ -24,8 +26,8 @@ class AppRunner {
 
         binding.deferFirstFrame();
 
+        // I don’t know why— I’m checking whether the platform is limited to desktops, but the web is working anyway.”
         if (!kIsWeb && !kIsWasm && ReusableGlobalFunctions.instance.isDesktop) {
-          debugPrint("web is coming here");
           await DesktopInitializer().run();
         }
 
@@ -44,14 +46,19 @@ class AppRunner {
           Bloc.transformer = sequential();
           Bloc.observer = BlocObserverManager(logger: logger);
 
-          final dependencyContainer = DependencyComposition(logger: logger).create();
+          final dependencyContainer =
+              DependencyComposition(logger: logger).create();
 
           late final Widget materialContext;
 
           if (kIsWeb || kIsWasm) {
-            materialContext = WebMaterialContext(dependencyContainer: dependencyContainer);
+            materialContext = WebMaterialContext(
+              dependencyContainer: dependencyContainer,
+            );
           } else {
-            materialContext = IoMaterialContext(dependencyContainer: dependencyContainer);
+            materialContext = IoMaterialContext(
+              dependencyContainer: dependencyContainer,
+            );
           }
 
           runApp(materialContext);

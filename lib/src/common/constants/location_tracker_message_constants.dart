@@ -6,6 +6,7 @@ abstract class LocationTrackerMessageConstants {
   static const String resultFailed = "failed";
   static const String lastInactiveDateTime = "last_inactive_datetime";
   static const String somethingWentWrong = "Something went wrong";
-  static const String platformExceptionError = "Error occurred when checking location permission";
+  static const String platformExceptionError =
+      "Error occurred when checking location permission";
   static const String permissionDenied = "PERMISSION_DENIED";
 }

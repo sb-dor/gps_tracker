@@ -30,5 +30,6 @@ final class LocationTrackerSendLocationFakeDatasource
   }) => Future.value(true);
 
   @override
-  Future<ShiftModel?> currentShift({String? currentDateTime}) => Future.value(null);
+  Future<ShiftModel?> currentShift({String? currentDateTime}) =>
+      Future.value(null);
 }

@@ -16,7 +16,8 @@ class IoMaterialContext extends StatefulWidget {
   State<IoMaterialContext> createState() => _IoMaterialContextState();
 }
 
-class _IoMaterialContextState extends State<IoMaterialContext> with WindowListener {
+class _IoMaterialContextState extends State<IoMaterialContext>
+    with WindowListener {
   final fadeTransitionPlatforms = {
     TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
     TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
@@ -55,7 +56,9 @@ class _IoMaterialContextState extends State<IoMaterialContext> with WindowListen
         home: LocationTrackerWidget(),
         debugShowCheckedModeBanner: !kReleaseMode,
         theme: ThemeData(
-          pageTransitionsTheme: PageTransitionsTheme(builders: fadeTransitionPlatforms),
+          pageTransitionsTheme: PageTransitionsTheme(
+            builders: fadeTransitionPlatforms,
+          ),
         ),
       ),
     );

@@ -8,7 +8,10 @@ class BlocObserverManager extends BlocObserver {
   final Logger _logger;
 
   @override
-  void onTransition(Bloc<Object?, Object?> bloc, Transition<Object?, Object?> transition) {
+  void onTransition(
+    Bloc<Object?, Object?> bloc,
+    Transition<Object?, Object?> transition,
+  ) {
     final logMessage =
         StringBuffer()
           ..writeln('Bloc: ${bloc.runtimeType}')
@@ -44,7 +47,12 @@ class BlocObserverManager extends BlocObserver {
 
     // you can also send bloc errors to server here
 
-    _logger.log(Level.error, logMessage.toString(), error: error, stackTrace: stackTrace);
+    _logger.log(
+      Level.error,
+      logMessage.toString(),
+      error: error,
+      stackTrace: stackTrace,
+    );
 
     // Avoid calling super.onError to prevent propagation
     // super.onError(bloc, error, stackTrace);
@@ -52,7 +60,8 @@ class BlocObserverManager extends BlocObserver {
 
   @override
   void onClose(BlocBase bloc) {
-    final logMessage = StringBuffer()..writeln('Closed Bloc: ${bloc.runtimeType}');
+    final logMessage =
+        StringBuffer()..writeln('Closed Bloc: ${bloc.runtimeType}');
 
     _logger.log(Level.info, logMessage.toString());
     super.onClose(bloc);
@@ -60,7 +69,8 @@ class BlocObserverManager extends BlocObserver {
 
   @override
   void onCreate(BlocBase bloc) {
-    final logMessage = StringBuffer()..writeln('Opened Bloc: ${bloc.runtimeType}');
+    final logMessage =
+        StringBuffer()..writeln('Opened Bloc: ${bloc.runtimeType}');
 
     _logger.log(Level.info, logMessage.toString());
     super.onCreate(bloc);

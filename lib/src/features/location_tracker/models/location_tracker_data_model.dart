@@ -2,7 +2,11 @@ import 'package:location/location.dart';
 
 class LocationTrackerDataModel {
   //
-  LocationTrackerDataModel({this.locationData, this.parsedDateTime, this.distance});
+  LocationTrackerDataModel({
+    this.locationData,
+    this.parsedDateTime,
+    this.distance,
+  });
 
   factory LocationTrackerDataModel.fromMap(final Map<String, dynamic> json) {
     return LocationTrackerDataModel(

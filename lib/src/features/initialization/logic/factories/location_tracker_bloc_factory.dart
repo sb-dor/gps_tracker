@@ -20,7 +20,8 @@ final class LocationTrackerBlocFactory extends Factory<LocationTrackerBloc> {
   @override
   LocationTrackerBloc create() {
     // ---------- Fake implementations
-    final ILocationTrackerDatasource datasource = LocationTrackerDatasourceFakeImpl();
+    final ILocationTrackerDatasource datasource =
+        LocationTrackerDatasourceFakeImpl();
 
     final locationSendLocal = LocationTrackerSendLocationFakeDatasource();
 
@@ -33,7 +34,10 @@ final class LocationTrackerBlocFactory extends Factory<LocationTrackerBloc> {
       iLocationTrackerSendLocationLocalDatasource: locationSendLocal,
     );
 
-    final locationTrackerHelper = LocationTrackerHelper(_location, _deviceInfoPlugin);
+    final locationTrackerHelper = LocationTrackerHelper(
+      _location,
+      _deviceInfoPlugin,
+    );
 
     return LocationTrackerBloc(
       repository: repository,

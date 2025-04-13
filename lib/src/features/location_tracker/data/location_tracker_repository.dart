@@ -12,7 +12,9 @@ abstract interface class ILocationTrackerRepository {
 
   Future<bool> pause({required final void Function(String message) onMessage});
 
-  Future<bool> finishShift({required final void Function(String message) onMessage});
+  Future<bool> finishShift({
+    required final void Function(String message) onMessage,
+  });
 
   Future<ShiftModel?> currentShift();
 
@@ -27,7 +29,8 @@ abstract interface class ILocationTrackerRepository {
   });
 }
 
-final class LocationTrackerRepositoryImpl implements ILocationTrackerRepository {
+final class LocationTrackerRepositoryImpl
+    implements ILocationTrackerRepository {
   LocationTrackerRepositoryImpl({
     required final ILocationTrackerDatasource iLocationTrackerDatasource,
     required final ILocationTrackerSendLocationDatasource
@@ -35,12 +38,16 @@ final class LocationTrackerRepositoryImpl implements ILocationTrackerRepository 
     required final ILocationTrackerSendLocationDatasource
     iLocationTrackerSendLocationLocalDatasource,
   }) : _iLocationTrackerDatasource = iLocationTrackerDatasource,
-       _iLocationTrackerSendLocationRemoteDatasource = iLocationTrackerSendLocationRemoteDatasource,
-       _iLocationTrackerSendLocationLocalDatasource = iLocationTrackerSendLocationLocalDatasource;
+       _iLocationTrackerSendLocationRemoteDatasource =
+           iLocationTrackerSendLocationRemoteDatasource,
+       _iLocationTrackerSendLocationLocalDatasource =
+           iLocationTrackerSendLocationLocalDatasource;
 
   final ILocationTrackerDatasource _iLocationTrackerDatasource;
-  final ILocationTrackerSendLocationDatasource _iLocationTrackerSendLocationRemoteDatasource;
-  final ILocationTrackerSendLocationDatasource _iLocationTrackerSendLocationLocalDatasource;
+  final ILocationTrackerSendLocationDatasource
+  _iLocationTrackerSendLocationRemoteDatasource;
+  final ILocationTrackerSendLocationDatasource
+  _iLocationTrackerSendLocationLocalDatasource;
 
   @override
   Future<ShiftModel?> startShift({
@@ -52,8 +59,9 @@ final class LocationTrackerRepositoryImpl implements ILocationTrackerRepository 
   );
 
   @override
-  Future<bool> finishShift({required void Function(String message) onMessage}) =>
-      _iLocationTrackerDatasource.finishShift(onMessage: onMessage);
+  Future<bool> finishShift({
+    required void Function(String message) onMessage,
+  }) => _iLocationTrackerDatasource.finishShift(onMessage: onMessage);
 
   @override
   Future<bool> pause({required void Function(String message) onMessage}) =>
@@ -61,7 +69,8 @@ final class LocationTrackerRepositoryImpl implements ILocationTrackerRepository 
 
   @override
   Future<ShiftModel?> currentShift() async {
-    final internetConnection = await InternetConnectionChecker.instance.hasConnection;
+    final internetConnection =
+        await InternetConnectionChecker.instance.hasConnection;
 
     if (internetConnection) {
       final lastInactiveDateTime = DateTime.now().toString();
@@ -85,7 +94,8 @@ final class LocationTrackerRepositoryImpl implements ILocationTrackerRepository 
     required LocationTrackerDataModel locationTrackerDataModel,
     required void Function(String message) onMessage,
   }) async {
-    final internetConnection = await InternetConnectionChecker.instance.hasConnection;
+    final internetConnection =
+        await InternetConnectionChecker.instance.hasConnection;
 
     if (internetConnection) {
       final localSavedLocations = <LocationTrackerDataModel>[];
@@ -95,7 +105,10 @@ final class LocationTrackerRepositoryImpl implements ILocationTrackerRepository 
         // and while you are sending them to the server, other data will be saved inside local database
         // but this logic gets only available locations and sends them to the server
         // not other data that came during send
-        await sendListOfLocations(locations: localSavedLocations, onMessage: onMessage);
+        await sendListOfLocations(
+          locations: localSavedLocations,
+          onMessage: onMessage,
+        );
       }
 
       return _iLocationTrackerSendLocationRemoteDatasource.sendLocation(

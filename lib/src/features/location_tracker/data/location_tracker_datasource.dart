@@ -9,13 +9,17 @@ abstract interface class ILocationTrackerDatasource {
 
   Future<bool> pause({required final void Function(String message) onMessage});
 
-  Future<bool> finishShift({required final void Function(String message) onMessage});
+  Future<bool> finishShift({
+    required final void Function(String message) onMessage,
+  });
 }
 
-final class LocationTrackerDatasourceFakeImpl implements ILocationTrackerDatasource {
+final class LocationTrackerDatasourceFakeImpl
+    implements ILocationTrackerDatasource {
   @override
-  Future<bool> finishShift({required void Function(String message) onMessage}) =>
-      Future.value(true);
+  Future<bool> finishShift({
+    required void Function(String message) onMessage,
+  }) => Future.value(true);
 
   @override
   Future<ShiftModel?> startShift({
@@ -24,5 +28,6 @@ final class LocationTrackerDatasourceFakeImpl implements ILocationTrackerDatasou
   }) => Future.value(null);
 
   @override
-  Future<bool> pause({required void Function(String message) onMessage}) => Future.value(true);
+  Future<bool> pause({required void Function(String message) onMessage}) =>
+      Future.value(true);
 }

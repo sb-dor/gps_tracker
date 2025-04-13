@@ -73,7 +73,8 @@ sealed class LocationTrackerState with _$LocationTrackerState {
       const LocationTrackerState.initial(LocationTrackerStateModel());
 }
 
-class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerState> {
+class LocationTrackerBloc
+    extends Bloc<LocationTrackerEvent, LocationTrackerState> {
   LocationTrackerBloc({
     required final ILocationTrackerRepository repository,
     required final LocationTrackerHelper locationTrackerHelper,
@@ -89,15 +90,22 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
     //
     on<LocationTrackerEvent>(
       (event, emit) => switch (event) {
-        final _LocationTracker$InitialEvent event => _locationTracker$InitialEvent(event, emit),
-        final _LocationTracker$StartEvent event => _locationTracker$StartEvent(event, emit),
-        final _LocationTracker$PauseEvent event => _locationTracker$PauseEvent(event, emit),
-        final _LocationTracker$CurrentLocationEvent event => _getCurrentBestLocation(
+        final _LocationTracker$InitialEvent event =>
+          _locationTracker$InitialEvent(event, emit),
+        final _LocationTracker$StartEvent event => _locationTracker$StartEvent(
+          event,
           emit,
-          event.onMessage,
-          event.locations,
         ),
-        final _LocationTracker$FinishEvent event => _locationTracker$StopEvent(event, emit),
+        final _LocationTracker$PauseEvent event => _locationTracker$PauseEvent(
+          event,
+          emit,
+        ),
+        final _LocationTracker$CurrentLocationEvent event =>
+          _getCurrentBestLocation(emit, event.onMessage, event.locations),
+        final _LocationTracker$FinishEvent event => _locationTracker$StopEvent(
+          event,
+          emit,
+        ),
       },
     );
   }
@@ -167,7 +175,9 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
 
       final location = await _location.getLocation();
 
-      await _getCurrentBestLocation(emit, event.onMessage, [location], checkValidPosition: false);
+      await _getCurrentBestLocation(emit, event.onMessage, [
+        location,
+      ], checkValidPosition: false);
 
       event.onStart();
 
@@ -175,7 +185,8 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
       // make request just once again and
       final shift = await _iLocationTrackerRepository.startShift(
         onMessage: event.onMessage,
-        locationTrackerDataModel: state.locationTrackerStateModel.locationTrackerDataModel,
+        locationTrackerDataModel:
+            state.locationTrackerStateModel.locationTrackerDataModel,
       );
 
       if (shift != null) {
@@ -188,11 +199,21 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
 
       event.onFinish();
 
-      _onLocationChanged = _location.onLocationChanged.bufferTime(_timerDuration).listen((data) {
-        add(LocationTrackerEvent.currentLocation(onMessage: event.onMessage, locations: data));
-      });
+      _onLocationChanged = _location.onLocationChanged
+          .bufferTime(_timerDuration)
+          .listen((data) {
+            add(
+              LocationTrackerEvent.currentLocation(
+                onMessage: event.onMessage,
+                locations: data,
+              ),
+            );
+          });
     } on PlatformException catch (error, stackTrace) {
-      if ((error.code.contains(LocationTrackerMessageConstants.permissionDenied) ?? false)) {
+      if ((error.code.contains(
+            LocationTrackerMessageConstants.permissionDenied,
+          ) ??
+          false)) {
         event.onMessage(LocationTrackerMessageConstants.permissionDenied);
       } else {
         event.onMessage(LocationTrackerMessageConstants.platformExceptionError);
@@ -206,7 +227,9 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
     _LocationTracker$PauseEvent event,
     Emitter<LocationTrackerState> emit,
   ) async {
-    final pauseShift = await _iLocationTrackerRepository.pause(onMessage: event.onMessage);
+    final pauseShift = await _iLocationTrackerRepository.pause(
+      onMessage: event.onMessage,
+    );
 
     if (!pauseShift) return;
 
@@ -223,7 +246,9 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
   ) async {
     await _sendLocalLocations(state.locationTrackerStateModel.shift);
 
-    final finishShift = await _iLocationTrackerRepository.finishShift(onMessage: event.onMessage);
+    final finishShift = await _iLocationTrackerRepository.finishShift(
+      onMessage: event.onMessage,
+    );
 
     if (!finishShift) return;
 
@@ -242,7 +267,10 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
     _emitter(emit, stateModel: currentStateModel);
   }
 
-  void _prepareData(Emitter<LocationTrackerState> emit, {bool isTracking = false}) async {
+  void _prepareData(
+    Emitter<LocationTrackerState> emit, {
+    bool isTracking = false,
+  }) async {
     final currentStateModel = state.locationTrackerStateModel.copyWith(
       // validatedPositions: <LocationData>[],
       lastValidPosition: null,
@@ -283,13 +311,16 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
         );
       }
 
-      final LocationTrackerDataModel locationTrackerDataModel = LocationTrackerDataModel(
-        locationData: location,
-        parsedDateTime: positionDateTime,
-        distance: positionDistance,
-      );
+      final LocationTrackerDataModel locationTrackerDataModel =
+          LocationTrackerDataModel(
+            locationData: location,
+            parsedDateTime: positionDateTime,
+            distance: positionDistance,
+          );
 
-      final validatedPositions = List.of(state.locationTrackerStateModel.validatedPositions);
+      final validatedPositions = List.of(
+        state.locationTrackerStateModel.validatedPositions,
+      );
 
       validatedPositions.add(location);
 
@@ -327,19 +358,38 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
     }
   }
 
-  void _emitter(Emitter<LocationTrackerState> emit, {LocationTrackerStateModel? stateModel}) {
+  void _emitter(
+    Emitter<LocationTrackerState> emit, {
+    LocationTrackerStateModel? stateModel,
+  }) {
     switch (state) {
       case LocationTracker$InitialState():
-        emit(LocationTrackerState.initial(stateModel ?? state.locationTrackerStateModel));
+        emit(
+          LocationTrackerState.initial(
+            stateModel ?? state.locationTrackerStateModel,
+          ),
+        );
         break;
       case LocationTracker$InProgressState():
-        emit(LocationTrackerState.inProgress(stateModel ?? state.locationTrackerStateModel));
+        emit(
+          LocationTrackerState.inProgress(
+            stateModel ?? state.locationTrackerStateModel,
+          ),
+        );
         break;
       case LocationTracker$ErrorState():
-        emit(LocationTrackerState.error(stateModel ?? state.locationTrackerStateModel));
+        emit(
+          LocationTrackerState.error(
+            stateModel ?? state.locationTrackerStateModel,
+          ),
+        );
         break;
       case LocationTracker$CompletedState():
-        emit(LocationTrackerState.completed(stateModel ?? state.locationTrackerStateModel));
+        emit(
+          LocationTrackerState.completed(
+            stateModel ?? state.locationTrackerStateModel,
+          ),
+        );
         break;
     }
   }
