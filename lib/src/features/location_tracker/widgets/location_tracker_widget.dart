@@ -161,6 +161,12 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
                               : "Lat: ${currentStateModel.lastValidPosition!.latitude}, Lng: ${currentStateModel.lastValidPosition!.longitude}",
                           textAlign: TextAlign.center,
                         ),
+                        Text(
+                          currentStateModel.speed == null
+                              ? "No speed yet"
+                              : "Speed: ${currentStateModel.speed}",
+                          textAlign: TextAlign.center,
+                        ),
                         const SizedBox(height: 10),
                         // Text("Mode: $_movementMode"),
                         const SizedBox(height: 20),

@@ -25,14 +25,14 @@ class LocationTrackerHelper {
     }
   }
 
-  ({bool isValid, DateTime? positionDateTime, double? distance}) isValidPosition(
+  ({bool isValid, DateTime? positionDateTime, double? distance, double? speed}) isValidPosition(
     LocationData currentPosition,
     LocationData? lastValidPosition,
   ) {
     // rejecting positions with bad accuracy (over 20) meters). That’s good for consistency.
     // The accuracy is not available on all devices. In these cases the value is 0.0.
     if ((currentPosition.accuracy ?? 0.0) > 50) {
-      return (isValid: false, positionDateTime: null, distance: null);
+      return (isValid: false, positionDateTime: null, distance: null, speed: null);
     }
 
     if (lastValidPosition != null) {
@@ -42,22 +42,23 @@ class LocationTrackerHelper {
       );
       // if user's previous location is around 10m do not get that location
       if (currentAndVerifiedPositionsData.distance < 10) {
-        return (isValid: false, positionDateTime: null, distance: null);
+        return (isValid: false, positionDateTime: null, distance: null, speed: null);
       }
 
       // 100 km/h
       if (currentAndVerifiedPositionsData.speed > 27.78) {
-        return (isValid: false, positionDateTime: null, distance: null);
+        return (isValid: false, positionDateTime: null, distance: null, speed: null);
       }
 
       return (
         isValid: true,
         positionDateTime: currentAndVerifiedPositionsData.positionDatetime,
         distance: currentAndVerifiedPositionsData.distance,
+        speed: currentAndVerifiedPositionsData.speed,
       );
     }
 
-    return (isValid: true, positionDateTime: null, distance: null);
+    return (isValid: true, positionDateTime: null, distance: null, speed: null);
   }
 
   ({double speed, double distance, DateTime positionDatetime}) dataBetweenTwoPositions({

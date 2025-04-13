@@ -245,6 +245,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
     for (final location in locations.reversed) {
       DateTime? positionDateTime;
       double? positionDistance;
+      double? speed;
 
       if (checkValidPosition) {
         final isValidPosition = _locationTrackerHelper.isValidPosition(
@@ -256,6 +257,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
 
         positionDateTime = isValidPosition.positionDateTime;
         positionDistance = isValidPosition.distance;
+        speed = isValidPosition.speed;
       } else {
         positionDateTime = _locationTrackerHelper.parsedDateTimeFromSinceEpoch(
           (location.time ?? 0.0).toInt(),
@@ -263,8 +265,8 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
       }
 
       final LocationTrackerDataModel locationTrackerDataModel = LocationTrackerDataModel(
-        parsedDateTime: positionDateTime,
         locationData: location,
+        parsedDateTime: positionDateTime,
         distance: positionDistance,
       );
 
@@ -277,6 +279,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
         validatedPositions: validatedPositions,
         locationTrackerDataModel: locationTrackerDataModel,
         setLocationTrackerDataModelOnNull: true,
+        speed: speed,
       );
 
       // print("validated positions length is: ${validatedPositions.length}");

@@ -11,12 +11,14 @@ class LocationTrackerStateModel {
     this.lastValidPosition,
     this.locationTrackerDataModel,
     this.validatedPositions = const <LocationData>[],
+    this.speed,
   });
 
   final ShiftModel? shift;
   final LocationData? lastValidPosition;
   final LocationTrackerDataModel? locationTrackerDataModel; // for sending to the server
   final List<LocationData> validatedPositions; // just for test, will be removed in the future
+  final double? speed; // just for test, will be removed in the future
 
   @override
   bool operator ==(Object other) =>
@@ -26,14 +28,16 @@ class LocationTrackerStateModel {
           shift == other.shift &&
           lastValidPosition == other.lastValidPosition &&
           locationTrackerDataModel == other.locationTrackerDataModel &&
-          validatedPositions == other.validatedPositions);
+          validatedPositions == other.validatedPositions &&
+          speed == other.speed);
 
   @override
   int get hashCode =>
       lastValidPosition.hashCode ^
       validatedPositions.hashCode ^
       locationTrackerDataModel.hashCode ^
-      shift.hashCode;
+      shift.hashCode ^
+      speed.hashCode;
 
   @override
   String toString() {
@@ -42,6 +46,7 @@ class LocationTrackerStateModel {
         ' validatedPositions: $validatedPositions,'
         ' locationTrackerDataModel: $locationTrackerDataModel'
         ' shift: $shift'
+        ' speed: $speed'
         '}';
   }
 
@@ -50,6 +55,7 @@ class LocationTrackerStateModel {
     LocationData? lastValidPosition,
     List<LocationData>? validatedPositions,
     LocationTrackerDataModel? locationTrackerDataModel,
+    double? speed,
     //
     bool setLastValidPositionOnNull = false,
     bool setLocationTrackerDataModelOnNull = false,
@@ -66,6 +72,7 @@ class LocationTrackerStateModel {
               ? locationTrackerDataModel
               : locationTrackerDataModel ?? this.locationTrackerDataModel,
       validatedPositions: validatedPositions ?? this.validatedPositions,
+      speed: speed ?? this.speed,
     );
   }
 }
