@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gps_tracker/runner_io.dart';
 import 'package:gps_tracker/src/features/initialization/logic/app_runner.dart';
+import 'package:gps_tracker/src/features/initialization/logic/desktop_initializer.dart';
 import 'package:gps_tracker/src/features/initialization/models/dependency_container.dart';
 import 'package:gps_tracker/src/features/location_tracker/widgets/location_tracker_widget.dart';
 import 'package:window_manager/window_manager.dart';

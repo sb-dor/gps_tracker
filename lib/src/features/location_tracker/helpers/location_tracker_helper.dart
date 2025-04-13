@@ -107,6 +107,8 @@ class LocationTrackerHelper {
 
   Future<bool> checkPermission({void Function(String message)? onErrorMessage}) async {
     try {
+      if (kIsWeb || kIsWasm) return true;
+
       final permissionResult = await _requestPermission();
 
       if (!permissionResult) return false;
