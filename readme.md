@@ -21,3 +21,38 @@ problems with android 9 only (haven't checked on real device), discussion on git
 problem but with difference package:
 
 https://github.com/Baseflow/flutter-geolocator/issues/1369
+
+
+
+-------------------------------------
+# 🛰️ GPS Tracking App
+
+A cross-platform GPS tracking application built with Flutter. It allows users to track their location in real time and view their position on a map. The app also supports background location tracking.
+
+## ✅ Features
+
+- Real-time GPS tracking
+- Background tracking support
+- Integrated map view using `flutter_map`
+- Cross-platform support
+
+## 📱 Platform Support
+
+| Platform | Status       |
+|----------|--------------|
+| ✅ Android | Implemented |
+| ✅ iOS     | Implemented |
+| ⬜ macOS   | Not yet      |
+| ⬜ Web     | Not yet      |
+
+## 🗺️ Map Integration
+
+A minimal implementation of [`flutter_map`](https://pub.dev/packages/flutter_map) allows users to see their current location on the map.
+
+## 🛠️ Background Mode
+
+Location tracking continues to work even when the app is in the background (Android and iOS).
+
+---
+
+*Made with Flutter 💙*
