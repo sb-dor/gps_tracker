@@ -58,3 +58,8 @@ Location tracking continues to work even when the app is in the background (Andr
 ---
 
 ### *Made with Flutter 💙*
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/sb-dor/gps_tracker/refs/heads/main/assets/readme_pics/ios_simulator_pic.png" width="150" />
+  <img src="https://raw.githubusercontent.com/sb-dor/gps_tracker/refs/heads/main/assets/readme_pics/android_simulator.png" width="150" />
+</p>
