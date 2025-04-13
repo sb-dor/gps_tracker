@@ -40,9 +40,9 @@ class LocationTrackerHelper {
     LocationData currentPosition,
     LocationData? lastValidPosition,
   ) {
-    // rejecting positions with bad accuracy (over 20) meters). That’s good for consistency.
+    // rejecting positions with bad accuracy (over 30) meters). That’s good for consistency.
     // The accuracy is not available on all devices. In these cases the value is 0.0.
-    if ((currentPosition.accuracy ?? 0.0) > 50) {
+    if ((currentPosition.accuracy ?? 0.0) > 30) {
       return (
         isValid: false,
         positionDateTime: null,
@@ -111,9 +111,6 @@ class LocationTrackerHelper {
       lastLocation.time!.toInt(),
     );
 
-    // Unfortunately, the geoLocator package doesn’t tell you whether the timestamp came from the
-    // GPS signal or the device clock — it just gives you the best available timestamp.
-    // but it's giving normal
     final double timeDiff =
         currentTime.difference(lastTime).inSeconds.toDouble();
 
