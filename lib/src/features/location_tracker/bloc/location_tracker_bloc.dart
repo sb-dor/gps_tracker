@@ -177,7 +177,7 @@ class LocationTrackerBloc
 
       await _getCurrentBestLocation(emit, event.onMessage, [
         location,
-      ], checkValidPosition: false);
+      ], checkValidPosition: false,);
 
       event.onStart();
 

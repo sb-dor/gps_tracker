@@ -149,7 +149,7 @@ class LocationTrackerHelper {
       }
 
       return true;
-    } on PlatformException catch (error, stackTrace) {
+    } on PlatformException {
       if (onErrorMessage != null) {
         onErrorMessage(LocationTrackerMessageConstants.platformExceptionError);
       }
