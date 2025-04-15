@@ -33,20 +33,49 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
+  # Cupertino-style icons for iOS-like UI
   cupertino_icons: ^1.0.8
+
+  # Checks for active internet connection
   internet_connection_checker: ^3.0.1
+
+  # Retrieves detailed device information
   device_info_plus: ^11.3.3
+
+  # Provides GPS location data
   location: ^8.0.0
+
+  # State management using the BLoC pattern
   flutter_bloc: ^9.1.0
+
+  # Interactive maps for Flutter (Leaflet-based)
   flutter_map: ^8.1.1
+
+  # Geospatial library used with flutter_map
   latlong2: ^0.9.1
+
+  # Requests and handles app permissions (e.g., location, Bluetooth)
   permission_handler: ^12.0.0+1
+
+  # Flutter plugin for working with Bluetooth devices
   flutter_blue_plus: ^1.35.3
+
+  # Annotation package for the freezed code generator
   freezed_annotation: ^3.0.0
+
+  # Annotation support for JSON serialization
   json_annotation: ^4.9.0
+
+  # Manages app windows (mainly for desktop apps)
   window_manager: ^0.4.3
+
+  # Simple and pretty logger utility for debugging
   logger: ^2.5.0
+
+  # Helps control event concurrency in bloc (e.g., droppable/restartable)
   bloc_concurrency: ^0.3.0
+
+  # Reactive programming utilities, streams extensions
   rxdart: ^0.28.0
 
 dev_dependencies:
@@ -59,8 +88,14 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+
+  # Code generation tool used with packages like `freezed` and `json_serializable`
   build_runner: ^2.4.15
+
+  # Code generation package for immutable data classes and union types
   freezed: ^3.0.6
+
+  # Generates code for serializing and deserializing JSON objects
   json_serializable: ^6.9.4
 
 # For information on the generic Dart part of this file, see the
