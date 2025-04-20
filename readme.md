@@ -66,6 +66,8 @@ A cross-platform GPS tracking application built with Flutter. It allows users to
 | ✅ iOS     | Implemented |
 | ✅ macOS   | Implemented |
 | ✅ Web     | Implemented |
+| 🚫 Windows | Not yet implemented |
+| 🚫 Linux   | Not yet implemented |
 
 ## 🗺️ Map Integration
 
