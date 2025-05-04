@@ -16,9 +16,17 @@ class WebMaterialContext extends StatefulWidget {
 class _WebMaterialContextState extends State<WebMaterialContext> {
   @override
   Widget build(BuildContext context) {
+     final mediaQueryData = MediaQuery.of(context);
     return DependenciesScope(
       dependencies: widget.dependencyContainer,
       child: MaterialApp(
+        builder:
+            (context, child) => MediaQuery(
+              data: mediaQueryData.copyWith(
+                textScaler: TextScaler.linear(mediaQueryData.textScaler.scale(1).clamp(0.5, 2)),
+              ),
+              child: child!,
+            ),
         debugShowCheckedModeBanner: !kReleaseMode,
         home: LocationTrackerWidget(),
       ),

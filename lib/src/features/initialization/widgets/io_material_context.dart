@@ -16,8 +16,7 @@ class IoMaterialContext extends StatefulWidget {
   State<IoMaterialContext> createState() => _IoMaterialContextState();
 }
 
-class _IoMaterialContextState extends State<IoMaterialContext>
-    with WindowListener {
+class _IoMaterialContextState extends State<IoMaterialContext> with WindowListener {
   final fadeTransitionPlatforms = {
     TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
     TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
@@ -50,15 +49,21 @@ class _IoMaterialContextState extends State<IoMaterialContext>
 
   @override
   Widget build(BuildContext context) {
+    final mediaQueryData = MediaQuery.of(context);
     return DependenciesScope(
       dependencies: widget.dependencyContainer,
       child: MaterialApp(
+        builder:
+            (context, child) => MediaQuery(
+              data: mediaQueryData.copyWith(
+                textScaler: TextScaler.linear(mediaQueryData.textScaler.scale(1).clamp(0.5, 2)),
+              ),
+              child: child!,
+            ),
         home: LocationTrackerWidget(),
         debugShowCheckedModeBanner: !kReleaseMode,
         theme: ThemeData(
-          pageTransitionsTheme: PageTransitionsTheme(
-            builders: fadeTransitionPlatforms,
-          ),
+          pageTransitionsTheme: PageTransitionsTheme(builders: fadeTransitionPlatforms),
         ),
       ),
     );
