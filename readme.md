@@ -47,7 +47,7 @@ https://pub.dev/packages/location#macos
 -------------------------------------
 # 🛰️ GPS Tracking App
 
-A cross-platform GPS tracking application built with Flutter. It allows users to track their location in real time and view their position on a map. The app also supports background location tracking.
+A cross-platform GPS tracking application built with Flutter. It allows users to track their location in real time and view their position on a map. The app also supports background location tracking (Android and iOs).
 
 ## ✅ Features
 
