@@ -20,6 +20,10 @@ https://stackoverflow.com/questions/67870103/cant-retrieve-location-in-flutter-b
 
 https://stackoverflow.com/questions/62749900/flutter-location-packages-does-not-return-current-location-on-ios
 
+for ios App Tracking Transparency (Rejection from App Store):
+
+https://github.com/deniza/app_tracking_transparency/issues/27
+
 problems with android 9 only (haven't checked on real device), discussion on github about the same 
 problem but with difference package:
 
