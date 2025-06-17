@@ -177,20 +177,21 @@ class LocationTrackerHelper {
           return false;
         }
       }
+    }
+    // Foreground location permission
+    var permission = await _location.hasPermission();
 
-      // Foreground location permission
-      var permission = await _location.hasPermission();
-
-      if (permission != PermissionStatus.granted) {
+    if (permission != PermissionStatus.granted) {
+      if (!isNotificationForAppTransparencyWasShown) {
         isNotificationForAppTransparencyWasShown = true;
         await locationNotificationDialog();
+      }
 
-        permission = await _location.requestPermission();
+      permission = await _location.requestPermission();
 
-        if (permission == PermissionStatus.denied || permission == PermissionStatus.deniedForever) {
-          await permissions.openAppSettings();
-          return false;
-        }
+      if (permission == PermissionStatus.denied || permission == PermissionStatus.deniedForever) {
+        await permissions.openAppSettings();
+        return false;
       }
     }
 
