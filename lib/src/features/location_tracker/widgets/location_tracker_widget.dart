@@ -9,6 +9,9 @@ import 'package:gps_tracker/src/features/location_tracker/bloc/location_tracker_
 import 'package:latlong2/latlong.dart';
 import 'controllers/location_tracker_widget_controller.dart';
 
+const String mapTileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const LatLng locationOfNewYork = LatLng(40.712776, -74.005974);
+
 // THE MAIN LOGIC USAGE
 class LocationTrackerWidget extends StatefulWidget {
   const LocationTrackerWidget({super.key});
@@ -115,6 +118,7 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _locationTrackerStateSubs.cancel();
     _locationTrackerWidgetController.dispose();
     _locationTrackerBloc.close();
     _mapController.dispose();
@@ -264,12 +268,12 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
                             options: const MapOptions(
                               maxZoom: 22,
                               minZoom: 6,
-                              initialCenter: LatLng(38.559772, 68.787038),
+                              initialCenter: locationOfNewYork,
                               initialZoom: 11,
                             ),
                             children: [
                               TileLayer(
-                                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                urlTemplate: mapTileUrl,
                                 userAgentPackageName: 'com.example.app',
                               ),
                               if (currentStateModel.validatedPositions.isNotEmpty)

@@ -26,7 +26,7 @@ sealed class LocationTrackerEvent with _$LocationTrackerEvent {
     required final LocationTrackerWidgetController locationWidgetController,
     required final Function({bool checkIsStarting}) startTracking,
     required final FutureVoidCallback locationNotificationDialog,
-    final Function(String message)? onMessage,
+    required final Function(String message) onMessage,
   }) = _LocationTracker$InitialEvent;
 
   const factory LocationTrackerEvent.start({
@@ -116,42 +116,55 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
     _LocationTracker$InitialEvent event,
     Emitter<LocationTrackerState> emit,
   ) async {
-    if (event.locationWidgetController.isTracking) return;
+    try {
+      if (event.locationWidgetController.isTracking) return;
 
-    emit(LocationTrackerState.inProgress(state.locationTrackerStateModel));
+      emit(LocationTrackerState.inProgress(state.locationTrackerStateModel));
 
-    final checkPermission = await _locationTrackerHelper.checkPermission(
-      onErrorMessage: event.onMessage,
-      locationNotificationDialog: event.locationNotificationDialog,
-    );
+      final checkPermission = await _locationTrackerHelper.checkPermission(
+        onErrorMessage: event.onMessage,
+        locationNotificationDialog: event.locationNotificationDialog,
+      );
 
-    if (!checkPermission) {
+      if (!checkPermission) {
+        emit(LocationTrackerState.completed(state.locationTrackerStateModel));
+        return;
+      }
+
+      _prepareData(emit);
+
+      // from widgetController that handles the logic of the ui
+      event.locationWidgetController.changeIsStarting(true);
+
+      // sends last inactive datetime (take a look inside repository)
+      final currentShift = await _iLocationTrackerRepository.currentShift();
+
+      final currentStateModel = state.locationTrackerStateModel.copyWith(
+        shift: currentShift,
+        setShiftOnNull: true,
+      );
+
+      emit(LocationTrackerState.completed(currentStateModel));
+
+      if (currentShift != null) {
+        event.startTracking(checkIsStarting: false);
+      } else {
+        event.locationWidgetController.changeIsStarting(false);
+      }
+
+      await _sendLocalLocations(currentShift);
+    } on PlatformException catch (error, stackTrace) {
+      if ((error.code.contains(LocationTrackerMessageConstants.permissionDenied))) {
+        final message = "${LocationTrackerMessageConstants.permissionDenied} ${error.message}";
+        event.onMessage(message);
+      } else {
+        final message =
+            "${LocationTrackerMessageConstants.platformExceptionError} ${error.message}";
+        event.onMessage(message);
+      }
       emit(LocationTrackerState.completed(state.locationTrackerStateModel));
-      return;
+      Error.throwWithStackTrace(error, stackTrace);
     }
-
-    _prepareData(emit);
-
-    // from widgetController that handles the logic of the ui
-    event.locationWidgetController.changeIsStarting(true);
-
-    // sends last inactive datetime (take a look inside repository)
-    final currentShift = await _iLocationTrackerRepository.currentShift();
-
-    final currentStateModel = state.locationTrackerStateModel.copyWith(
-      shift: currentShift,
-      setShiftOnNull: true,
-    );
-
-    emit(LocationTrackerState.completed(currentStateModel));
-
-    if (currentShift != null) {
-      event.startTracking(checkIsStarting: false);
-    } else {
-      event.locationWidgetController.changeIsStarting(false);
-    }
-
-    await _sendLocalLocations(currentShift);
   }
 
   void _locationTracker$StartEvent(
@@ -198,10 +211,13 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
         add(LocationTrackerEvent.currentLocation(onMessage: event.onMessage, locations: data));
       });
     } on PlatformException catch (error, stackTrace) {
-      if ((error.code.contains(LocationTrackerMessageConstants.permissionDenied) ?? false)) {
-        event.onMessage(LocationTrackerMessageConstants.permissionDenied);
+      if ((error.code.contains(LocationTrackerMessageConstants.permissionDenied))) {
+        final message = "${LocationTrackerMessageConstants.permissionDenied} ${error.message}";
+        event.onMessage(message);
       } else {
-        event.onMessage(LocationTrackerMessageConstants.platformExceptionError);
+        final message =
+            "${LocationTrackerMessageConstants.platformExceptionError} ${error.message}";
+        event.onMessage(message);
       }
       event.onFinish();
       Error.throwWithStackTrace(error, stackTrace);

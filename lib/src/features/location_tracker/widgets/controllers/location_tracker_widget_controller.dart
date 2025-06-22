@@ -26,5 +26,8 @@ class LocationTrackerWidgetController with ChangeNotifier {
     notifyListeners();
   }
 
-  void saveLastInActiveDateTime() async {}
+  void saveLastInActiveDateTime() async {
+    // logic for saving last inactive datetime
+    // if user goes to background mode
+  }
 }

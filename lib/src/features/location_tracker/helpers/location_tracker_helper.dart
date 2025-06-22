@@ -104,33 +104,30 @@ class LocationTrackerHelper {
 
   DateTime parsedDateTimeFromSinceEpoch(int time) => DateTime.fromMillisecondsSinceEpoch(time);
 
+  bool get _isMobilePlatform =>
+      defaultTargetPlatform == TargetPlatform.android ||
+      defaultTargetPlatform == TargetPlatform.iOS;
+
   Future<bool> checkPermission({
     required FutureVoidCallback locationNotificationDialog,
     void Function(String message)? onErrorMessage,
   }) async {
     try {
-      // Nothing to do with web, the plugin works directly out of box.
       if (kIsWeb || kIsWasm) return true;
 
-      final permissionResult = await _requestPermission(
+      final permissionGranted = await _requestPermission(
         locationNotificationDialog: locationNotificationDialog,
       );
 
-      if (!permissionResult) return false;
+      if (!permissionGranted) return false;
 
-      final isMobilePlatform =
-          defaultTargetPlatform == TargetPlatform.android ||
-          defaultTargetPlatform == TargetPlatform.iOS;
-
-      if (isMobilePlatform && !(await _location.isBackgroundModeEnabled())) {
+      if (_isMobilePlatform && !(await _location.isBackgroundModeEnabled())) {
         await _location.enableBackgroundMode();
       }
 
       return true;
     } on PlatformException {
-      if (onErrorMessage != null) {
-        onErrorMessage(LocationTrackerMessageConstants.platformExceptionError);
-      }
+      onErrorMessage?.call(LocationTrackerMessageConstants.platformExceptionError);
       rethrow;
     } catch (error, stackTrace) {
       Error.throwWithStackTrace(error, stackTrace);
@@ -138,74 +135,85 @@ class LocationTrackerHelper {
   }
 
   Future<bool> _requestPermission({required FutureVoidCallback locationNotificationDialog}) async {
-    final service = await _checkServiceEnables();
+    if (!await _checkServiceEnables()) return false;
 
-    if (!service) return false;
+    var shownTransparencyDialog = false;
 
-    bool isNotificationForAppTransparencyWasShown = false;
-
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      TrackingStatus appTrackingTransparencyStatus =
-          await AppTrackingTransparency.trackingAuthorizationStatus;
-
-      final appTrackingTransparencyNotSupported =
-          appTrackingTransparencyStatus == TrackingStatus.notSupported;
-
-      if (!appTrackingTransparencyNotSupported) {
-        if (appTrackingTransparencyStatus == TrackingStatus.restricted ||
-            appTrackingTransparencyStatus == TrackingStatus.denied) {
-          if (!isNotificationForAppTransparencyWasShown) {
-            isNotificationForAppTransparencyWasShown = true;
-            await locationNotificationDialog();
-          }
-          await permissions.openAppSettings();
-          return false;
-        }
-
-        while (appTrackingTransparencyStatus == TrackingStatus.notDetermined) {
-          if (!isNotificationForAppTransparencyWasShown) {
-            isNotificationForAppTransparencyWasShown = true;
-            await locationNotificationDialog();
-          }
-          appTrackingTransparencyStatus =
-              await AppTrackingTransparency.requestTrackingAuthorization();
-        }
-
-        appTrackingTransparencyStatus = await AppTrackingTransparency.trackingAuthorizationStatus;
-
-        if (appTrackingTransparencyStatus != TrackingStatus.authorized) {
-          return false;
-        }
-      }
+    if (defaultTargetPlatform == TargetPlatform.iOS &&
+        !(await _handleAppTransparency(
+          locationNotificationDialog,
+          () => shownTransparencyDialog = true,
+        ))) {
+      return false;
     }
-    // Foreground location permission
+
+    final locationPermission = await _requestLocationPermission(
+      locationNotificationDialog,
+      shownTransparencyDialog,
+    );
+
+    if (!locationPermission) {
+      return false;
+    }
+
+    if (defaultTargetPlatform == TargetPlatform.android &&
+        !await _checkAndroidLocationAlwaysPermission()) {
+      await permissions.openAppSettings();
+      return false;
+    }
+
+    return true;
+  }
+
+  Future<bool> _handleAppTransparency(
+    FutureVoidCallback dialog,
+    VoidCallback markDialogShown,
+  ) async {
+    var status = await AppTrackingTransparency.trackingAuthorizationStatus;
+
+    if (status == TrackingStatus.notSupported) return true;
+
+    if (status == TrackingStatus.restricted || status == TrackingStatus.denied) {
+      markDialogShown();
+      await dialog();
+      await permissions.openAppSettings();
+      return false;
+    }
+
+    while (status == TrackingStatus.notDetermined) {
+      markDialogShown();
+      await dialog();
+      status = await AppTrackingTransparency.requestTrackingAuthorization();
+    }
+
+    return status == TrackingStatus.authorized;
+  }
+
+  Future<bool> _requestLocationPermission(
+    FutureVoidCallback dialog,
+    bool dialogAlreadyShown,
+  ) async {
     var permission = await _location.hasPermission();
 
-    if (permission != PermissionStatus.granted) {
-      if (!isNotificationForAppTransparencyWasShown) {
-        isNotificationForAppTransparencyWasShown = true;
-        await locationNotificationDialog();
-      }
+    if (permission == PermissionStatus.granted) return true;
 
-      permission = await _location.requestPermission();
+    if (!dialogAlreadyShown) await dialog();
 
-      if (permission == PermissionStatus.denied || permission == PermissionStatus.deniedForever) {
-        await permissions.openAppSettings();
-        return false;
-      }
+    permission = await _location.requestPermission();
+
+    if (permission == PermissionStatus.denied || permission == PermissionStatus.deniedForever) {
+      await permissions.openAppSettings();
+      return false;
     }
 
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      final AndroidDeviceInfo androidInfo = await _deviceInfoPlugin.androidInfo;
-      if (androidInfo.version.sdkInt >= 30) {
-        final locationAlways = await permissions.Permission.locationAlways.isGranted;
-        if (!locationAlways) {
-          await permissions.openAppSettings();
-          return false;
-        }
-      }
-    }
+    return true;
+  }
 
+  Future<bool> _checkAndroidLocationAlwaysPermission() async {
+    final androidInfo = await _deviceInfoPlugin.androidInfo;
+    if (androidInfo.version.sdkInt >= 30) {
+      return await permissions.Permission.locationAlways.isGranted;
+    }
     return true;
   }
 
