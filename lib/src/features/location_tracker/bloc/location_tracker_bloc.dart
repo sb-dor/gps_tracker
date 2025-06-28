@@ -26,6 +26,7 @@ sealed class LocationTrackerEvent with _$LocationTrackerEvent {
     required final LocationTrackerWidgetController locationWidgetController,
     required final Function({bool checkIsStarting}) startTracking,
     required final FutureVoidCallback locationNotificationDialog,
+    required final FutureVoidCallback locationNotificationForAppSettings,
     required final Function(String message) onMessage,
   }) = _LocationTracker$InitialEvent;
 
@@ -34,6 +35,7 @@ sealed class LocationTrackerEvent with _$LocationTrackerEvent {
     required final void Function() onStart,
     required final void Function() onFinish,
     required final FutureVoidCallback locationNotificationDialog,
+    required final FutureVoidCallback locationNotificationForAppSettings,
   }) = _LocationTracker$StartEvent;
 
   const factory LocationTrackerEvent.pause({
@@ -124,6 +126,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
       final checkPermission = await _locationTrackerHelper.checkPermission(
         onErrorMessage: event.onMessage,
         locationNotificationDialog: event.locationNotificationDialog,
+        locationNotificationForAppSettings: event.locationNotificationForAppSettings,
       );
 
       if (!checkPermission) {
@@ -175,6 +178,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
       final checkPermission = await _locationTrackerHelper.checkPermission(
         onErrorMessage: event.onMessage,
         locationNotificationDialog: event.locationNotificationDialog,
+        locationNotificationForAppSettings: event.locationNotificationForAppSettings,
       );
 
       if (!checkPermission) {

@@ -7,6 +7,7 @@ import 'package:gps_tracker/src/common/constants/location_tracker_message_consta
 import 'package:gps_tracker/src/features/initialization/widgets/dependencies_scope.dart';
 import 'package:gps_tracker/src/features/location_tracker/bloc/location_tracker_bloc.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'controllers/location_tracker_widget_controller.dart';
 
 const String mapTileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -38,6 +39,7 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
         startTracking: startTracking,
         onMessage: _showMessage,
         locationNotificationDialog: _showLocationNotificationPermissionDialog,
+        locationNotificationForAppSettings: _showLocationPermissionAppSettingsDialog,
       ),
     );
     _locationTrackerStateSubs = _locationTrackerBloc.stream.listen((state) {
@@ -70,6 +72,7 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
           _locationTrackerWidgetController.changeIsStarting(false);
         },
         locationNotificationDialog: _showLocationNotificationPermissionDialog,
+        locationNotificationForAppSettings: _showLocationPermissionAppSettingsDialog,
       ),
     );
   }
@@ -112,6 +115,36 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
           actionsAlignment: MainAxisAlignment.center,
         );
       },
+    );
+  }
+
+  Future<void> _showLocationPermissionAppSettingsDialog() async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Разрешение на геолокацию'),
+            content: const Text(
+              'Приложение не сможет работать в полном объёме без доступа к вашему местоположению. '
+              'Разрешение необходимо для отслеживания маршрута и корректной работы функций навигации. '
+              'Вы можете продолжить использовать другие функции приложения, но работа с геолокацией будет недоступна.\n\n'
+              'Пожалуйста, откройте настройки и предоставьте разрешение на использование геолокации.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(), // Просто закрыть
+                child: const Text('Закрыть'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  await openAppSettings();
+                },
+                child: const Text('Открыть настройки'),
+              ),
+            ],
+          ),
     );
   }
 

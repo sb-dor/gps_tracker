@@ -110,6 +110,7 @@ class LocationTrackerHelper {
 
   Future<bool> checkPermission({
     required FutureVoidCallback locationNotificationDialog,
+    required FutureVoidCallback locationNotificationForAppSettings,
     void Function(String message)? onErrorMessage,
   }) async {
     try {
@@ -117,6 +118,7 @@ class LocationTrackerHelper {
 
       final permissionGranted = await _requestPermission(
         locationNotificationDialog: locationNotificationDialog,
+        locationNotificationForAppSettings: locationNotificationForAppSettings,
       );
 
       if (!permissionGranted) return false;
@@ -134,22 +136,23 @@ class LocationTrackerHelper {
     }
   }
 
-  Future<bool> _requestPermission({required FutureVoidCallback locationNotificationDialog}) async {
-    if (!await _checkServiceEnables()) return false;
-
-    var shownTransparencyDialog = false;
+  Future<bool> _requestPermission({
+    required FutureVoidCallback locationNotificationDialog,
+    required FutureVoidCallback locationNotificationForAppSettings,
+  }) async {
+    if (!await _checkServiceEnabled()) return false;
 
     if (defaultTargetPlatform == TargetPlatform.iOS &&
         !(await _handleAppTransparency(
           locationNotificationDialog,
-          () => shownTransparencyDialog = true,
+          locationNotificationForAppSettings,
         ))) {
       return false;
     }
 
     final locationPermission = await _requestLocationPermission(
       locationNotificationDialog,
-      shownTransparencyDialog,
+      locationNotificationForAppSettings,
     );
 
     if (!locationPermission) {
@@ -167,21 +170,19 @@ class LocationTrackerHelper {
 
   Future<bool> _handleAppTransparency(
     FutureVoidCallback dialog,
-    VoidCallback markDialogShown,
+    FutureVoidCallback locationNotificationForAppSettings,
   ) async {
     var status = await AppTrackingTransparency.trackingAuthorizationStatus;
 
     if (status == TrackingStatus.notSupported) return true;
 
     if (status == TrackingStatus.restricted || status == TrackingStatus.denied) {
-      markDialogShown();
-      await dialog();
+      // await dialog();
       await permissions.openAppSettings();
       return false;
     }
 
-    while (status == TrackingStatus.notDetermined) {
-      markDialogShown();
+    if (status == TrackingStatus.notDetermined) {
       await dialog();
       status = await AppTrackingTransparency.requestTrackingAuthorization();
     }
@@ -191,17 +192,17 @@ class LocationTrackerHelper {
 
   Future<bool> _requestLocationPermission(
     FutureVoidCallback dialog,
-    bool dialogAlreadyShown,
+    FutureVoidCallback locationNotificationForAppSettings,
   ) async {
     var permission = await _location.hasPermission();
 
     if (permission == PermissionStatus.granted) return true;
 
-    if (!dialogAlreadyShown) await dialog();
-
     permission = await _location.requestPermission();
 
-    if (permission == PermissionStatus.denied || permission == PermissionStatus.deniedForever) {
+    if (permission == PermissionStatus.denied ||
+        permission == PermissionStatus.deniedForever ||
+        permission == PermissionStatus.grantedLimited) {
       await permissions.openAppSettings();
       return false;
     }
@@ -220,7 +221,7 @@ class LocationTrackerHelper {
   // PlatformException(SERVICE_STATUS_ERROR, Location service status couldn't be determined, null, null)
   // for solution you can check the url that I put in readme.md file
   // in main app folder
-  Future<bool> _checkServiceEnables({int limit = 10}) async {
+  Future<bool> _checkServiceEnabled({int limit = 10}) async {
     try {
       bool serviceEnabled = await _location.serviceEnabled();
       if (!serviceEnabled) {
@@ -232,7 +233,7 @@ class LocationTrackerHelper {
     } on PlatformException {
       await Future.delayed(Duration(milliseconds: 100));
       if (limit > 0) {
-        return await _checkServiceEnables(limit: --limit);
+        return await _checkServiceEnabled(limit: --limit);
       }
     }
     return false;
