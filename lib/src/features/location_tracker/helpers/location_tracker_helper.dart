@@ -4,7 +4,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:gps_tracker/src/common/constants/location_tracker_message_constants.dart';
-import 'package:gps_tracker/src/features/location_tracker/bloc/location_tracker_bloc.dart';
+import 'package:gps_tracker/src/features/location_tracker/models/location_types.dart';
 import 'package:location/location.dart';
 import 'dart:developer' as dev;
 import 'package:permission_handler/permission_handler.dart' as permissions;

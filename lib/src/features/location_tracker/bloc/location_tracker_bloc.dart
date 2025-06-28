@@ -5,17 +5,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:gps_tracker/src/common/constants/location_tracker_message_constants.dart';
 import 'package:gps_tracker/src/features/location_tracker/data/location_tracker_repository.dart';
+import 'package:gps_tracker/src/features/location_tracker/helpers/location_status_listener.dart';
 import 'package:gps_tracker/src/features/location_tracker/helpers/location_tracker_helper.dart';
 import 'package:gps_tracker/src/features/location_tracker/models/location_tracker_data_model.dart';
 import 'package:gps_tracker/src/features/location_tracker/models/location_tracker_state_model.dart';
+import 'package:gps_tracker/src/features/location_tracker/models/location_types.dart';
 import 'package:gps_tracker/src/features/location_tracker/models/shift_model.dart';
 import 'package:gps_tracker/src/features/location_tracker/widgets/controllers/location_tracker_widget_controller.dart';
 import 'package:location/location.dart';
 import 'package:rxdart/rxdart.dart';
 
 part 'location_tracker_bloc.freezed.dart';
-
-typedef FutureVoidCallback = Future<void> Function();
 
 @immutable
 @freezed
@@ -85,11 +85,15 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
     required final LocationTrackerHelper locationTrackerHelper,
     required final Location location,
     required final Duration timerDuration,
+    LocationStatusListener? locationStatusListener,
     LocationTrackerState? initialState,
   }) : _iLocationTrackerRepository = repository,
        _locationTrackerHelper = locationTrackerHelper,
        _location = location,
        _timerDuration = timerDuration,
+       _locationStatusListener =
+           locationStatusListener ??
+           LocationStatusListener(locationTrackerHelper: locationTrackerHelper),
 
        super(initialState ?? LocationTrackerState.initialState) {
     //
@@ -112,6 +116,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
   final LocationTrackerHelper _locationTrackerHelper;
   final Location _location;
   final Duration _timerDuration;
+  final LocationStatusListener _locationStatusListener;
   StreamSubscription<List<LocationData>>? _onLocationChanged;
 
   void _locationTracker$InitialEvent(
@@ -211,6 +216,12 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
 
       event.onFinish();
 
+      _locationStatusListener.listenLocationStatus(
+        onErrorMessage: event.onMessage,
+        locationNotificationDialog: event.locationNotificationDialog,
+        locationNotificationForAppSettings: event.locationNotificationForAppSettings,
+      );
+
       _onLocationChanged = _location.onLocationChanged.bufferTime(_timerDuration).listen((data) {
         add(LocationTrackerEvent.currentLocation(onMessage: event.onMessage, locations: data));
       });
@@ -238,8 +249,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
 
     event.onPause();
 
-    _onLocationChanged?.cancel();
-    _onLocationChanged = null;
+    await _closeLocationChanged();
     _emitter(emit);
   }
 
@@ -263,8 +273,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
       setShiftOnNull: true,
       setSpeedOnNull: true,
     );
-    _onLocationChanged?.cancel();
-    _onLocationChanged = null;
+    await _closeLocationChanged();
     _emitter(emit, stateModel: currentStateModel);
   }
 
@@ -276,8 +285,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
       setLastValidPositionOnNull: true,
       setLocationTrackerDataModelOnNull: true,
     );
-    _onLocationChanged?.cancel();
-    _onLocationChanged = null;
+    await _closeLocationChanged();
     _emitter(emit, stateModel: currentStateModel);
   }
 
@@ -371,9 +379,14 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
   }
 
   @override
-  Future<void> close() {
-    _onLocationChanged?.cancel();
-    _onLocationChanged = null;
+  Future<void> close() async {
+    await _closeLocationChanged();
     return super.close();
+  }
+
+  Future<void> _closeLocationChanged() async {
+    await _onLocationChanged?.cancel();
+    _onLocationChanged = null;
+    _locationStatusListener.dispose();
   }
 }
