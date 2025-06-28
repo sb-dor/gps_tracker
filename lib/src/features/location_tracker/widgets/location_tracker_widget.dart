@@ -88,13 +88,10 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
       barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
-          title: const Text(
-            "Разрешение на отслеживание местоположения",
-            textAlign: TextAlign.center,
-          ),
+          title: const Text("Location Tracking Permission", textAlign: TextAlign.center),
           content: const Text(
-            "Приложение запрашивает доступ к вашему местоположению для отслеживания во время работы.\n\n"
-            "Пожалуйста, разрешите доступ к местоположению, чтобы обеспечить корректную работу функций отслеживания.",
+            "The app requests access to your location for tracking while it is running.\n\n"
+            "Please allow location access to ensure the tracking features work correctly.",
             textAlign: TextAlign.center,
           ),
           actions: [
@@ -109,7 +106,7 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
               onPressed: () {
                 Navigator.of(context, rootNavigator: true).pop();
               },
-              child: const Text("Продолжить", style: TextStyle(color: Colors.white)),
+              child: const Text("Continue", style: TextStyle(color: Colors.white)),
             ),
           ],
           actionsAlignment: MainAxisAlignment.center,
@@ -124,24 +121,24 @@ class LocationTrackerWidgetState extends State<LocationTrackerWidget> with Widge
       barrierDismissible: false,
       builder:
           (_) => AlertDialog(
-            title: const Text('Разрешение на геолокацию'),
+            title: const Text('Location Permission'),
             content: const Text(
-              'Приложение не сможет работать в полном объёме без доступа к вашему местоположению. '
-              'Разрешение необходимо для отслеживания маршрута и корректной работы функций навигации. '
-              'Вы можете продолжить использовать другие функции приложения, но работа с геолокацией будет недоступна.\n\n'
-              'Пожалуйста, откройте настройки и предоставьте разрешение на использование геолокации.',
+              "The app won't be able to function fully without access to your location. "
+              "Permission is required for route tracking and proper navigation features. "
+              "You can continue to use other features of the app, but location-based functionality will be unavailable.\n\n"
+              "Please open settings and grant location permission.",
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(), // Просто закрыть
-                child: const Text('Закрыть'),
+                child: const Text('Close'),
               ),
               TextButton(
                 onPressed: () async {
                   Navigator.of(context).pop();
                   await openAppSettings();
                 },
-                child: const Text('Открыть настройки'),
+                child: const Text('Open Settings'),
               ),
             ],
           ),
