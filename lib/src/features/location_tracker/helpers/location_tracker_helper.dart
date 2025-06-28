@@ -161,7 +161,7 @@ class LocationTrackerHelper {
 
     if (defaultTargetPlatform == TargetPlatform.android &&
         !await _checkAndroidLocationAlwaysPermission()) {
-      await permissions.openAppSettings();
+      await locationNotificationForAppSettings();
       return false;
     }
 
@@ -178,7 +178,7 @@ class LocationTrackerHelper {
 
     if (status == TrackingStatus.restricted || status == TrackingStatus.denied) {
       // await dialog();
-      await permissions.openAppSettings();
+      await locationNotificationForAppSettings();
       return false;
     }
 
@@ -203,7 +203,7 @@ class LocationTrackerHelper {
     if (permission == PermissionStatus.denied ||
         permission == PermissionStatus.deniedForever ||
         permission == PermissionStatus.grantedLimited) {
-      await permissions.openAppSettings();
+      await locationNotificationForAppSettings();
       return false;
     }
 
