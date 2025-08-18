@@ -171,7 +171,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
         event.onMessage(message);
       }
       emit(LocationTrackerState.completed(state.locationTrackerStateModel));
-      Error.throwWithStackTrace(error, stackTrace);
+      addError(error, stackTrace);
     }
   }
 
@@ -235,7 +235,7 @@ class LocationTrackerBloc extends Bloc<LocationTrackerEvent, LocationTrackerStat
         event.onMessage(message);
       }
       event.onFinish();
-      Error.throwWithStackTrace(error, stackTrace);
+      addError(error, stackTrace);
     }
   }
 

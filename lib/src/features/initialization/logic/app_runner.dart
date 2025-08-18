@@ -70,6 +70,10 @@ class AppRunner {
       },
       (error, stackTrace) {
         logger.log(Level.debug, "Error: $error | stacktrace: $stackTrace");
+
+        if (kReleaseMode) {
+          // send your crashes to you back-end
+        }
       },
     );
   }
