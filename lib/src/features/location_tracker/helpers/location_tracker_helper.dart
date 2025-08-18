@@ -142,12 +142,12 @@ class LocationTrackerHelper {
   }) async {
     if (!await _checkServiceEnabled()) return false;
 
-    if (defaultTargetPlatform == TargetPlatform.iOS &&
-        !(await _handleAppTransparency(
-          locationNotificationDialog,
-          locationNotificationForAppSettings,
-        ))) {
-      return false;
+    TrackingStatus? trackingStatus;
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      trackingStatus = await AppTrackingTransparency.trackingAuthorizationStatus;
+      if (trackingStatus == TrackingStatus.notDetermined) {
+        await locationNotificationDialog();
+      }
     }
 
     final locationPermission = await _requestLocationPermission(
@@ -156,6 +156,11 @@ class LocationTrackerHelper {
     );
 
     if (!locationPermission) {
+      return false;
+    }
+
+    if (defaultTargetPlatform == TargetPlatform.iOS &&
+        !(await _handleAppTransparency(locationNotificationForAppSettings, trackingStatus))) {
       return false;
     }
 
@@ -169,11 +174,9 @@ class LocationTrackerHelper {
   }
 
   Future<bool> _handleAppTransparency(
-    FutureVoidCallback dialog,
     FutureVoidCallback locationNotificationForAppSettings,
+    TrackingStatus? status,
   ) async {
-    var status = await AppTrackingTransparency.trackingAuthorizationStatus;
-
     if (status == TrackingStatus.notSupported) return true;
 
     if (status == TrackingStatus.restricted || status == TrackingStatus.denied) {
@@ -183,7 +186,8 @@ class LocationTrackerHelper {
     }
 
     if (status == TrackingStatus.notDetermined) {
-      await dialog();
+      // await dialog();
+      await Future.delayed(const Duration(seconds: 1));
       status = await AppTrackingTransparency.requestTrackingAuthorization();
     }
 
